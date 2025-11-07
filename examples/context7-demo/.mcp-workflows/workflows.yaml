@@ -1,0 +1,24 @@
+context7:get-library-docs:
+  description: "Fetch documentation from Context7"
+
+context7_demo:
+  description: "Answer documentation questions via Context7"
+  parameters:
+    topic:
+      type: "string"
+      description: "Library or topic to research"
+      required: true
+  prompt: |
+    Use context7:get-library-docs with the topic {{ topic }}.
+    Summarize the most relevant APIs and callouts for the user.
+  tools:
+    context7:get-library-docs: "Retrieve docs from Context7"
+
+context7_auto:
+  description: "Auto-discovered Context7 tools"
+  prompt: |
+    Use Context7 tools as needed to collect documentation and answer the request.
+  externalServers:
+    - context7
+  tools:
+    context7:get-library-docs: "Prefer this to fetch docs"

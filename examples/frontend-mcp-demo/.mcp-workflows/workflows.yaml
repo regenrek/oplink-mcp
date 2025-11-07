@@ -1,0 +1,97 @@
+chrome-devtools:navigate_page:
+  description: "Navigate the active page (url/back/forward/reload)"
+
+chrome-devtools:performance_start_trace:
+  description: "Start a performance trace (optionally reload)"
+
+chrome-devtools:performance_stop_trace:
+  description: "Stop the active performance trace"
+
+chrome-devtools:list_network_requests:
+  description: "List recent network requests/TTFB/size"
+
+chrome-devtools:list_console_messages:
+  description: "List console logs with levels and stack frames"
+
+chrome-devtools:take_screenshot:
+  description: "Capture a page or element screenshot"
+
+shadcn:list_items_in_registries:
+  description: "List components from configured registries"
+
+shadcn:search_items_in_registries:
+  description: "Search shadcn/ui registries"
+
+shadcn:get_add_command_for_items:
+  description: "Generate shadcn add commands for components"
+
+frontend_debugger:
+  description: "Debug and profile a live UI using Chrome DevTools; suggest concrete fixes"
+  parameters:
+    url:
+      type: "string"
+      description: "Page URL to open and analyze (http/https)"
+      required: true
+    task:
+      type: "string"
+      description: "Specific issue or goal (e.g., 'repro dropdown bug', 'reduce LCP')"
+  prompt: |
+    Open {{ url }} in Chrome via the Chrome DevTools MCP.
+
+    Do a targeted debugging pass:
+    - Performance: record a short trace, inspect LCP/CLS/long tasks, and surface the slowest scripts.
+    - Network: capture requests sorted by size and TTFB; note 4xx/5xx and large images.
+    - Console: collect errors/warnings with stack frames.
+    - Screenshot: capture a full-page screenshot for context.
+    {{#task}}Also attempt to reproduce/verify: {{ task }}.{{/task}}
+
+    Produce a concise report:
+    - Key findings with evidence (metrics, log lines, request URLs)
+    - Root-cause hypotheses with confidence levels
+    - Step-by-step fixes with code-oriented guidance
+    - Quick wins vs. deeper work; include expected impact on Core Web Vitals
+
+    If UI components or patterns need improvement, consult the shadcn MCP for component guidance
+    and propose concrete refactors (include component names, props, and example usage).
+
+  tools:
+    chrome-devtools:navigate_page: "Open the target page"
+    chrome-devtools:performance_start_trace: "Record perf trace and summarize LCP/CLS"
+    chrome-devtools:performance_stop_trace: "Stop the trace once metrics are gathered"
+    chrome-devtools:list_network_requests: "List slowest/largest requests and errors"
+    chrome-devtools:list_console_messages: "Collect console errors/warnings"
+    chrome-devtools:take_screenshot: "Full-page screenshot for context"
+    shadcn:list_items_in_registries: "Browse available UI components"
+    shadcn:search_items_in_registries: "Search for components or patterns"
+    shadcn:get_add_command_for_items: "Generate install commands for components"
+
+ui_components_maintenance:
+  description: "Maintain and evolve UI using shadcn; verify changes in the browser"
+  parameters:
+    component:
+      type: "string"
+      description: "Component name or pattern to add/update (e.g., 'accordion', 'dialog')"
+    goal:
+      type: "string"
+      description: "Maintenance goal (e.g., 'standardize forms', 'dark mode polish')"
+    preview_url:
+      type: "string"
+      description: "Optional local preview URL to verify changes (e.g., http://localhost:3000)"
+  prompt: |
+    Use the shadcn MCP to plan and execute UI maintenance.
+    - Audit current usage against shadcn guidelines; propose consistent patterns.
+    - If {{ component }} is provided, retrieve usage guidance and examples and outline integration steps.
+    - Generate example code snippets and migration notes.
+
+    If {{ preview_url }} is provided, open it via Chrome DevTools and capture a screenshot to validate UI results.
+
+    Deliverables:
+    - Change plan (files to touch, steps)
+    - Example snippets (tsx/css) with minimal diffs
+    - Post-change checklist (a11y, keyboard, focus rings, contrast)
+
+  tools:
+    shadcn:list_items_in_registries: "List components and categories"
+    shadcn:search_items_in_registries: "Search components and patterns"
+    shadcn:get_add_command_for_items: "Generate install/update commands"
+    chrome-devtools:take_screenshot: "Screenshot to verify visual outcome"

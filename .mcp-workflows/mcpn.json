@@ -1,0 +1,10 @@
+{
+  "packages": {
+    "example-workflow.yaml": {
+      "source": "url",
+      "url": "https://example.com/my-preset.yaml",
+      "installedAt": "2023-04-01T12:30:00Z",
+      "updatedAt": "2023-04-01T12:30:00Z"
+    }
+  }
+}

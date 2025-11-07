@@ -1,0 +1,25 @@
+{
+	"mcpServers": {
+		"oplink": {
+			"command": "node",
+			"args": [
+				"/Users/kregenrek/projects/mcp/oplink/packages/cli/bin/oplink.mjs",
+				"server",
+				"--config",
+				"examples/deepwiki-demo/.mcp-workflows"
+			]
+		},
+		"oplink-frontend": {
+			"command": "node",
+			"args": [
+				"/Users/kregenrek/projects/mcp/oplink/packages/cli/bin/oplink.mjs",
+				"server",
+				"--config",
+				"examples/frontend-mcp-demo/.mcp-workflows"
+			],
+			"env": {
+				"FRONTEND_ROOT": "/Users/kregenrek/projects/mcp/oplink/examples/frontend-mcp-demo"
+			}
+		}
+	}
+}

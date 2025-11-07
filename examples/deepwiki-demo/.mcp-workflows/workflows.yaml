@@ -1,0 +1,23 @@
+deepwiki_lookup:
+  description: "Look up details in DeepWiki"
+  parameters:
+    query:
+      type: "string"
+      description: "Search phrase or entity"
+      required: true
+  prompt: |
+    Use a DeepWiki search tool with the query {{ query }}.
+    Return the top findings with citations and summarize key facts.
+  externalServers:
+    - deepwiki
+  tools:
+    deepwiki:deepwiki_search: "Prefer this for searching the knowledge base (if available)"
+
+deepwiki_auto:
+  description: "Auto-discovered DeepWiki tools"
+  prompt: |
+    Invoke DeepWiki tools as needed to gather background information and answer the user.
+  externalServers:
+    - deepwiki
+  tools:
+    deepwiki:deepwiki_search: "Prefer this for searching the knowledge base (if available)"

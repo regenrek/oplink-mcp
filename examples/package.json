@@ -1,0 +1,6 @@
+{
+  "name": "@oplink/examples",
+  "private": true,
+  "type": "module",
+  "description": "Example workloads and demo assets for Oplink MCP servers"
+}

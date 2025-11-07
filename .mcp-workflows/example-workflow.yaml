@@ -1,0 +1,19 @@
+kevin_mode:
+  description: "Generates a PRD"
+  prompt: Ask the user 10 questions about their idea
+  toolMode: "sequential"
+  tools: "proposePlan, generatePRD"
+
+proposePlan:
+  description: "Generates a PRD"
+  parameters:
+    answers:
+      type: "string"
+      description: "Answers to the 10 questions asked"
+      required: true
+  prompt: Based on the answers to the 10 question, propose a plan for our PRD here are the answers {{ answers }}
+  toolMode: "sequential"
+  tools: "123tool, 456tool"
+
+generatePRD:
+  prompt: Generate a PRD and save to features folder

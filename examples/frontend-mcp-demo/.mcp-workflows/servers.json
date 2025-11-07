@@ -1,0 +1,18 @@
+{
+  "servers": {
+    "chrome-devtools": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "chrome-devtools-mcp@latest"],
+      "description": "Chrome DevTools MCP for live browser debugging and performance analysis"
+    },
+    "shadcn": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "shadcn@latest", "mcp"],
+      "description": "shadcn MCP for browsing/searching/installing UI components",
+      "cwd": "${FRONTEND_ROOT}"
+    }
+  }
+}
+
