@@ -378,6 +378,9 @@ importers:
       tailwindcss:
         specifier: ^3.4.17
         version: 3.4.18(tsx@4.19.3)(yaml@2.7.1)
+      tailwindcss-animate:
+        specifier: ^1.0.7
+        version: 1.0.7(tailwindcss@3.4.18(tsx@4.19.3)(yaml@2.7.1))
       typescript:
         specifier: ^5.6.3
         version: 5.8.2
@@ -11150,7 +11153,7 @@ snapshots:
       react-toastify: 10.0.6(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       serve-handler: 6.1.6
       tailwind-merge: 2.6.0
-      tailwindcss-animate: 1.0.7
+      tailwindcss-animate: 1.0.7(tailwindcss@3.4.18(tsx@4.19.3)(yaml@2.7.1))
       zod: 3.24.2
     transitivePeerDependencies:
       - '@types/react'
@@ -19435,7 +19438,9 @@ snapshots:
       tailwind-merge: 2.5.4
       tailwindcss: 4.1.2
 
-  tailwindcss-animate@1.0.7: {}
+  tailwindcss-animate@1.0.7(tailwindcss@3.4.18(tsx@4.19.3)(yaml@2.7.1)):
+    dependencies:
+      tailwindcss: 3.4.18(tsx@4.19.3)(yaml@2.7.1)
 
   tailwindcss@3.4.18(tsx@4.19.3)(yaml@2.7.1):
     dependencies:

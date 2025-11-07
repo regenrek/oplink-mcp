@@ -1,30 +1,3 @@
-chrome-devtools:navigate_page:
-  description: "Navigate the active page (url/back/forward/reload)"
-
-chrome-devtools:performance_start_trace:
-  description: "Start a performance trace (optionally reload)"
-
-chrome-devtools:performance_stop_trace:
-  description: "Stop the active performance trace"
-
-chrome-devtools:list_network_requests:
-  description: "List recent network requests/TTFB/size"
-
-chrome-devtools:list_console_messages:
-  description: "List console logs with levels and stack frames"
-
-chrome-devtools:take_screenshot:
-  description: "Capture a page or element screenshot"
-
-shadcn:list_items_in_registries:
-  description: "List components from configured registries"
-
-shadcn:search_items_in_registries:
-  description: "Search shadcn/ui registries"
-
-shadcn:get_add_command_for_items:
-  description: "Generate shadcn add commands for components"
-
 frontend_debugger:
   description: "Debug and profile a live UI using Chrome DevTools; suggest concrete fixes"
   parameters:
