@@ -7,8 +7,8 @@ Create your own no-code workflows with MCP apps. Oplink combines multiple MCP se
 
 ✨ **Why Oplink?**
 <br /><br />
-🚀 *No-code agent workflows* — ship new MCP tools by editing YAML prompts instead of redeploying TypeScript.<br />
-🧩 *One endpoint, many servers* — bundle Chrome DevTools, shadcn, Context7, etc. behind a single MCP server entry.<br />
+🚀 *No-code agent workflows* — create your own agent workflows with just editing yaml files<br />
+🧩 *One endpoint, many servers* — bundle any MCP Server like Chrome DevTools, shadcn, Context7, etc. behind a single MCP server entry.<br />
 🛡️ *Guided prompts & schemas* — every workflow exposes typed parameters, instructions, and curated helper tools.<br />
 🧠 *Works in any MCP client* — Cursor, Claude Code, Codex, Windsurf, and friends can run complex flows without custom glue code.<br /><br />
 
@@ -16,7 +16,7 @@ Imagine you're debugging a frontend issue and need to:
 - **Chrome DevTools** to inspect the browser, capture screenshots, and analyze network requests
 - **shadcn** to understand component APIs and get the latest library documentation
 
-![Example](public/example.jpg)
+![Example](public/workflow.jpg)
 
 Without Oplink, you'd need to manually coordinate between multiple MCP servers, switching contexts and piecing together results. With Oplink, you define a single `frontend_debugging` workflow that orchestrates both servers in one call.
 

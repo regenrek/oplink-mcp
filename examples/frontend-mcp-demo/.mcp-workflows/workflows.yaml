@@ -1,3 +1,30 @@
+chrome-devtools:navigate_page:
+  description: "Navigate pages (url/back/forward/reload)"
+
+chrome-devtools:performance_start_trace:
+  description: "Start a performance trace"
+
+chrome-devtools:performance_stop_trace:
+  description: "Stop the performance trace"
+
+chrome-devtools:list_network_requests:
+  description: "List recent network requests"
+
+chrome-devtools:list_console_messages:
+  description: "List console logs"
+
+chrome-devtools:take_screenshot:
+  description: "Capture a screenshot"
+
+shadcn:list_items_in_registries:
+  description: "List components from registries"
+
+shadcn:search_items_in_registries:
+  description: "Search shadcn registries"
+
+shadcn:get_add_command_for_items:
+  description: "Generate shadcn add commands"
+
 frontend_debugger:
   description: "Debug and profile a live UI using Chrome DevTools; suggest concrete fixes"
   parameters:
@@ -68,3 +95,32 @@ ui_components_maintenance:
     shadcn:search_items_in_registries: "Search components and patterns"
     shadcn:get_add_command_for_items: "Generate install/update commands"
     chrome-devtools:take_screenshot: "Screenshot to verify visual outcome"
+
+take_screenshot:
+  description: "Capture screenshots of web pages for documentation, testing, or visual verification"
+  parameters:
+    url:
+      type: "string"
+      description: "Page URL to capture (http/https)"
+      required: true
+    full_page:
+      type: "boolean"
+      description: "Whether to capture full page or just viewport (default: true)"
+    wait_for:
+      type: "string"
+      description: "Optional selector or condition to wait for before capturing"
+  prompt: |
+    Navigate to {{ url }} using Chrome DevTools.
+    {{#wait_for}}Wait for {{ wait_for }} to be present before capturing.{{/wait_for}}
+    
+    Capture a {{#full_page}}full-page{{/full_page}}{{^full_page}}viewport{{/full_page}} screenshot.
+    
+    Provide:
+    - The screenshot image
+    - Brief description of what's visible
+    - Any notable visual elements or issues observed
+    - Page dimensions and viewport information if relevant
+
+  tools:
+    chrome-devtools:navigate_page: "Navigate to the target URL"
+    chrome-devtools:take_screenshot: "Capture the screenshot"
