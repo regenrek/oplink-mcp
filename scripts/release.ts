@@ -3,7 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 // List of packages to publish (directory names)
-const packages = ["cli", "oplink", "test-utils"];
+const packages = ["cli", "oplink"];
 
 // List of all packages that need version bumping (directory names)
 // @TODO

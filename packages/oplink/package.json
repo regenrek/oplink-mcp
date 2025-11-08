@@ -18,7 +18,7 @@
 			"email": "kevin@instructa.org"
 		}
 	],
-	"bugs": "https://github.com/instructa/oplink/issues",
+	"bugs": "https://github.com/regenrek/oplink-mcp/issues",
 	"license": "MIT",
 	"main": "./dist/index.cjs",
 	"module": "./dist/index.mjs",
