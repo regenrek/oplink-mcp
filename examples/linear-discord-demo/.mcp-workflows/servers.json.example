@@ -6,12 +6,7 @@
       "args": ["-y", "mcp-remote", "https://mcp.linear.app/mcp"],
       "auth": "oauth",
       "clientName": "oplink-linear-demo",
-      "oauthRedirectUrl": "http://127.0.0.1:43115/callback",
       "tokenCacheDir": "./.tokens/linear",
-      "env": {
-        "MCP_REMOTE_CLIENT_ID": "${LINEAR_CLIENT_ID}",
-        "MCP_REMOTE_CLIENT_SECRET": "${LINEAR_CLIENT_SECRET}"
-      },
       "description": "Linear hosted MCP server (OAuth)"
     },
     "discord": {

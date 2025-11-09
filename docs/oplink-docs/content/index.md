@@ -41,7 +41,7 @@ OPLINK connects your favorite AI tools right in your code editor, making your co
   icon: i-simple-icons-github
   size: xl
   target: _blank
-  to: https://github.com/dx-zero/oplink-registry
+  to: https://github.com/regenrek/oplink
   variant: subtle
   ---
   GitHub
@@ -58,7 +58,7 @@ All Your AI Tools in One Place
   color: neutral
   size: lg
   target: _blank
-  to: https://github.com/dx-zero/oplink-registry
+  to: https://github.com/regenrek/oplink
   trailingIcon: i-lucide-arrow-right
   variant: subtle
   ---
@@ -143,7 +143,7 @@ All Your AI Tools in One Place
       icon: i-lucide-arrow-right
       color: primary
     - label: GitHub
-      to: https://github.com/dx-zero/oplink-registry
+      to: https://github.com/regenrek/oplink
       target: _blank
       icon: i-simple-icons-github
       color: neutral
