@@ -399,6 +399,12 @@ importers:
       '@types/js-yaml':
         specifier: catalog:types
         version: 4.0.9
+      ajv:
+        specifier: ^8.17.1
+        version: 8.17.1
+      ajv-formats:
+        specifier: ^3.0.1
+        version: 3.0.1(ajv@8.17.1)
       js-yaml:
         specifier: catalog:prod
         version: 4.1.0
@@ -457,9 +463,15 @@ importers:
       '@anthropic-ai/sdk':
         specifier: ^0.39.0
         version: 0.39.0
+      '@leeoniya/ufuzzy':
+        specifier: ^1.0.19
+        version: 1.0.19
       '@modelcontextprotocol/sdk':
         specifier: catalog:prod
         version: 1.8.0
+      dotenv:
+        specifier: ^16.4.7
+        version: 16.4.7
       js-yaml:
         specifier: catalog:prod
         version: 4.1.0
@@ -1931,6 +1943,9 @@ packages:
 
   '@kwsites/promise-deferred@1.1.1':
     resolution: {integrity: sha512-GaHYm+c0O9MjZRu0ongGBRbinu8gVAMd2UZjji6jVmqKtZluZnptXGWhz1E8j8D2HJ3f/yMxKAUC0b+57wncIw==}
+
+  '@leeoniya/ufuzzy@1.0.19':
+    resolution: {integrity: sha512-0pikDeYt0IHEUPza5RTCDXc/17S1pTrYnReEMp8Aa6k1ovzw5QdZLwicW8TjljwEZRb6oYag0xmALohrcq/yOQ==}
 
   '@mapbox/node-pre-gyp@2.0.0':
     resolution: {integrity: sha512-llMXd39jtP0HpQLVI37Bf1m2ADlEb35GYSh1SDSLsBhR+5iCxiNGlT31yqbNtVHygHAtMy6dWFERpU2JgufhPg==}
@@ -11004,6 +11019,8 @@ snapshots:
       - supports-color
 
   '@kwsites/promise-deferred@1.1.1': {}
+
+  '@leeoniya/ufuzzy@1.0.19': {}
 
   '@mapbox/node-pre-gyp@2.0.0':
     dependencies:

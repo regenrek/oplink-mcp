@@ -33,20 +33,22 @@
 			"require": "./dist/index.cjs"
 		}
 	},
-  "scripts": {
+	"scripts": {
 		"dev": "tsx src/server.ts",
 		"dev:verbose": "NODE_ENV=development tsx src/server.ts",
 		"inspect": "tsc && mkdir -p dist/presets && cp src/presets/*.yaml dist/presets/ && npx @modelcontextprotocol/inspector node -- dist/cli-entry.mjs",
 		"build": "unbuild",
 		"prepublishOnly": "pnpm run build",
 		"update": "npm version patch && npm publish",
-    "test": "vitest",
-    "test:ci": "vitest run --reporter=dot",
+		"test": "vitest",
+		"test:ci": "vitest run --reporter=dot",
 		"cli:dist": "node dist/cli-entry.mjs --preset thinking"
-  },
+	},
 	"dependencies": {
 		"@anthropic-ai/sdk": "^0.39.0",
+		"@leeoniya/ufuzzy": "^1.0.19",
 		"@modelcontextprotocol/sdk": "catalog:prod",
+		"dotenv": "^16.4.7",
 		"js-yaml": "catalog:prod",
 		"mcporter": "^0.4.1",
 		"mri": "^1.2.0",

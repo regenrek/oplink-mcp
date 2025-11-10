@@ -112,7 +112,7 @@ debug_workflow:
 
 ### MCP Server Registry
 
-External tools are resolved through `.mcp-workflows/servers.json`. Each entry maps a friendly alias to an MCP server definition (stdio command or HTTP endpoint). Use `${ENV_VAR}` placeholders for secrets. Oplink reads this file directly; you do not need a `mcporter.json` for Oplink to run.
+External tools are resolved through `.mcp-workflows/servers.json`. Each entry maps a friendly alias to an MCP server definition (stdio command or HTTP endpoint). Use `${ENV_VAR}` placeholders for secrets. When you run with `--config <dir>`, Oplink auto‑loads `.env` files from that directory before expanding placeholders (precedence: shell > `.env.{NODE_ENV}.local` > `.env.{NODE_ENV}` > `.env.local` > `.env`). You do not need a `mcporter.json` for Oplink to run.
 
 ```json
 {

@@ -21,7 +21,7 @@ Oplink delegates all communication with external MCP servers to [mcporter](https
 - Workflows that use `externalServers` can proxy any tool from those aliases without copying schemas into your repo.
 
 ## Auth handoff
-- API keys: use `${ENV_VAR}` placeholders in `servers.json`; Oplink expands them from `process.env` before creating the mcporter runtime.
+- API keys: use `${ENV_VAR}` placeholders in `servers.json`; Oplink expands them from `process.env` (after auto‑loading `.env` files from your `--config` directory) before creating the mcporter runtime.
 - OAuth: for hosted servers (e.g., Linear), use `auth: "oauth"` and run via `npx mcp-remote <endpoint>`. mcporter handles browser/device flow and stores tokens in `tokenCacheDir`.
 
 ## Acknowledgements

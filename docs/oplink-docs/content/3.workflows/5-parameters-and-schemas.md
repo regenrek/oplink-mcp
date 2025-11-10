@@ -21,9 +21,12 @@ custom_mode:
 
 Notes
 
-- Supported types: `string`, `number`, `boolean` (enums are supported via `enum: [...]`).
+- Supported types: `string`, `number`, `boolean`, `array`, `object`, and `enum`.
 - Required/optional and defaults are enforced before any steps run.
 - Rendered values (e.g., `{{ thought }}`) are available to your prompt and to step `args`.
+- Type preservation for step args:
+  - If an arg is exactly `{{ param }}`, the original value and type are injected (numbers stay numbers; booleans stay booleans; arrays/objects remain structured).
+  - If an arg mixes text with placeholders, the final value is a string.
 
 Scripted workflows
 

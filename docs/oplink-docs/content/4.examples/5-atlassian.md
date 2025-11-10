@@ -38,20 +38,30 @@ You'll need separate tokens for Jira and Confluence if you use different account
 
 ## Configuration
 
-### Environment Variables
+### Environment & .env (place in the config directory)
 
-Create a `.env` file in the example directory:
+Create a `.env` file alongside `servers.json` in `examples/atlassian-demo/.mcp-workflows/`:
 
 ```bash
-# Jira Configuration
+# Jira Cloud (option A)
 JIRA_URL=https://your-company.atlassian.net
 JIRA_USERNAME=your.email@company.com
-JIRA_API_TOKEN=your_jira_api_token_here
+JIRA_API_TOKEN=your_cloud_api_token
 
-# Confluence Configuration
+# Jira Server/Data Center (option B)
+# JIRA_URL=https://jira.your-company.internal
+# JIRA_PERSONAL_TOKEN=your_dc_pat
+# JIRA_SSL_VERIFY=false
+
+# Confluence Cloud (option A)
 CONFLUENCE_URL=https://your-company.atlassian.net/wiki
 CONFLUENCE_USERNAME=your.email@company.com
-CONFLUENCE_API_TOKEN=your_confluence_api_token_here
+CONFLUENCE_API_TOKEN=your_confluence_cloud_token
+
+# Confluence Server/Data Center (option B)
+# CONFLUENCE_URL=https://confluence.your-company.internal
+# CONFLUENCE_PERSONAL_TOKEN=your_dc_pat
+# CONFLUENCE_SSL_VERIFY=false
 
 # Optional: Filter by project keys (comma-separated)
 # JIRA_PROJECTS_FILTER=PROJ,DEV,SUPPORT
@@ -62,16 +72,15 @@ CONFLUENCE_API_TOKEN=your_confluence_api_token_here
 
 **Where to add keys:**
 
-1. **Create `.env` file**: Copy `.env.example` to `.env` in `examples/atlassian-demo/`
-2. **Fill in credentials**: Add your Atlassian URLs, usernames, and API tokens
-3. **Export variables**: Before running Oplink, export them:
-   ```bash
-   export $(cat examples/atlassian-demo/.env | xargs)
-   ```
+1. **Create `.env` file**: Copy `.env.example` to `.mcp-workflows/.env` (note the location)
+2. **Fill in credentials**: Choose Cloud (A) or Server/DC (B) and set only the relevant vars
+3. **Auto‑load**: Running with `--config examples/atlassian-demo/.mcp-workflows` auto‑loads `.env` from that folder
 
-### Server Configuration
+### Server Configuration (Cloud vs Server/DC)
 
-The `.mcp-workflows/servers.json` file registers the Atlassian MCP server as a Docker container:
+Choose the block that matches your deployment.
+
+Cloud (email + API token):
 
 ```json
 {
@@ -98,6 +107,39 @@ The `.mcp-workflows/servers.json` file registers the Atlassian MCP server as a D
         "CONFLUENCE_URL": "${CONFLUENCE_URL}",
         "CONFLUENCE_USERNAME": "${CONFLUENCE_USERNAME}",
         "CONFLUENCE_API_TOKEN": "${CONFLUENCE_API_TOKEN}"
+      }
+    }
+  }
+}
+```
+
+Server/Data Center (personal token):
+
+```json
+{
+  "servers": {
+    "atlassian": {
+      "type": "stdio",
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-e", "JIRA_URL",
+        "-e", "JIRA_PERSONAL_TOKEN",
+        "-e", "JIRA_SSL_VERIFY",
+        "-e", "CONFLUENCE_URL",
+        "-e", "CONFLUENCE_PERSONAL_TOKEN",
+        "-e", "CONFLUENCE_SSL_VERIFY",
+        "ghcr.io/sooperset/mcp-atlassian:latest"
+      ],
+      "env": {
+        "JIRA_URL": "${JIRA_URL}",
+        "JIRA_PERSONAL_TOKEN": "${JIRA_PERSONAL_TOKEN:-}",
+        "JIRA_SSL_VERIFY": "${JIRA_SSL_VERIFY:-false}",
+        "CONFLUENCE_URL": "${CONFLUENCE_URL}",
+        "CONFLUENCE_PERSONAL_TOKEN": "${CONFLUENCE_PERSONAL_TOKEN:-}",
+        "CONFLUENCE_SSL_VERIFY": "${CONFLUENCE_SSL_VERIFY:-false}"
       }
     }
   }
@@ -221,10 +263,9 @@ get_confluence_page_content({
 
 ## Usage
 
-1. **Set environment variables:**
-   ```bash
-   export $(cat examples/atlassian-demo/.env | xargs)
-   ```
+1. **Provide credentials:**
+   - Put them in `examples/atlassian-demo/.env` (recommended; auto‑loaded), or
+   - Export them in your shell: `export $(cat examples/atlassian-demo/.env | xargs)`
 
 2. **Start Oplink:**
    ```bash
@@ -287,7 +328,7 @@ get_confluence_page_content({
 
 ## Troubleshooting
 
-- **"Missing environment variable"**: Ensure all required variables are exported (use `export $(cat .env | xargs)`)
+- **"Missing environment variable"**: Ensure all required variables exist in the example `.env` (or are exported in your shell). Oplink auto‑loads `.env` from the example config directory.
 - **"Docker not found"**: Ensure Docker is installed and running
 - **"Authentication failed"**: Verify your API tokens are correct and not expired
 - **"Permission denied"**: Ensure your Atlassian account has access to the projects/spaces you're trying to access
@@ -297,7 +338,7 @@ get_confluence_page_content({
 
 - **API Tokens vs Passwords**: Use API tokens, not your account password
 - **Token Security**: Never commit `.env` files to version control
+- **Cloud vs Server/DC**: Use only one set of env vars (Cloud or DC). If you see errors like `Error calling tool 'search'` with `${JIRA_URL}` literal, ensure `.env` is inside `.mcp-workflows/` and DC variables are set when using Server/Data Center.
 - **Project/Space Filters**: Use `JIRA_PROJECTS_FILTER` and `CONFLUENCE_SPACES_FILTER` to limit access
 - **Read-Only Mode**: Set `READ_ONLY_MODE=true` in your environment to disable write operations
 - **Tool Filtering**: Use `ENABLED_TOOLS` environment variable to restrict which tools are available
-

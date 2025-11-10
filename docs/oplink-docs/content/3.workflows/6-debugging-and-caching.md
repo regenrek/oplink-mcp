@@ -18,7 +18,15 @@ Common errors
 
 - Missing env placeholder
   - Symptom: `Missing environment variable 'X' referenced by server 'alias' in servers.json`
-  - Fix: export `X` (or remove the `${X}` entry if optional)
+  - Fix: place `.env` inside the `--config` directory so Oplink auto‑loads it (or export `X` before start); remove `${X}` if optional.
+
+- Atlassian Jira search failing
+  - Symptom: `Error calling tool 'search'`
+  - Fix: for Server/Data Center, use `JIRA_PERSONAL_TOKEN` (and `CONFLUENCE_PERSONAL_TOKEN`) instead of Cloud `JIRA_API_TOKEN`; update `servers.json` to pass `-e JIRA_PERSONAL_TOKEN`/`-e JIRA_SSL_VERIFY` to Docker.
+
+- Unknown tool name
+  - Symptom: `Server 'alias' does not expose tool 'X'`
+  - Fix: Oplink prints "Did you mean: …" suggestions; or run `describe_tools({ refresh: true })` to see the live catalog.
 
 - Connection closed on startup
   - Symptom: `MCP error -32000: Connection closed`

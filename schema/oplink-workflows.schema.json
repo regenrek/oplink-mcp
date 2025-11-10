@@ -4,6 +4,25 @@
   "title": "Oplink Workflows",
   "type": "object",
   "description": "Map of workflow names to definitions",
+  "definitions": {
+    "parameter": {
+      "type": "object",
+      "properties": {
+        "type": { "type": "string", "enum": ["string", "number", "boolean", "array", "object", "enum"] },
+        "description": { "type": "string" },
+        "required": { "type": "boolean" },
+        "enum": { "type": "array", "items": { "type": ["string", "number", "boolean"] } },
+        "items": { "$ref": "#/definitions/parameter" },
+        "properties": {
+          "type": "object",
+          "additionalProperties": { "$ref": "#/definitions/parameter" }
+        },
+        "default": { "type": ["string", "number", "boolean", "array", "object", "null"] }
+      },
+      "required": ["type"],
+      "additionalProperties": false
+    }
+  },
   "additionalProperties": {
     "type": "object",
     "properties": {
@@ -19,11 +38,16 @@
         "additionalProperties": {
           "type": "object",
           "properties": {
-            "type": { "type": "string", "enum": ["string", "number", "boolean"] },
+            "type": { "type": "string", "enum": ["string", "number", "boolean", "array", "object", "enum"] },
             "description": { "type": "string" },
             "required": { "type": "boolean" },
             "enum": { "type": "array", "items": { "type": ["string", "number", "boolean"] } },
-            "default": { "type": ["string", "number", "boolean", "null"] }
+            "items": { "$ref": "#/definitions/parameter" },
+            "properties": {
+              "type": "object",
+              "additionalProperties": { "$ref": "#/definitions/parameter" }
+            },
+            "default": { "type": ["string", "number", "boolean", "array", "object", "null"] }
           },
           "required": ["type"],
           "additionalProperties": false
@@ -71,3 +95,7 @@
   }
 }
 
+/*
+ Note: this schema defines a recursive reference to parameter definitions via
+ `#/definitions/parameter`. Define the shared parameter shape here.
+*/

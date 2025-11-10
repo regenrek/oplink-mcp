@@ -486,10 +486,12 @@ function registerExternalServerWorkflow(
 			.optional();
 	}
 
-	const handler = async (params?: Record<string, any>) => {
-		try {
-			const normalized = params ?? {};
-			let requestedTool = normalized.tool;
+    const handler = async (params?: Record<string, any>) => {
+        let aliasUsed: string | undefined;
+        let toolUsed: string | undefined;
+        try {
+            const normalized = params ?? {};
+            let requestedTool = normalized.tool;
 			if (!requestedTool || typeof requestedTool !== "string") {
 				return { content: [{ type: "text", text: promptWithHint }] };
 			}
@@ -501,34 +503,39 @@ function registerExternalServerWorkflow(
 					requestedTool = toolPart;
 				}
 			}
-			if (!alias) {
-				alias = normalizedAliases.length === 1 ? normalizedAliases[0] : undefined;
-			}
-			if (!alias) {
-				throw new Error(
-					`Parameter 'server' is required when multiple aliases are available (${normalizedAliases.join(", ")})`,
-				);
-			}
-			const toolInfo = await discoveryCache.getTool(alias, requestedTool);
-			const rawArgs = normalized.args ?? normalized.arguments ?? {};
-			if (rawArgs && typeof rawArgs !== "object") {
-				throw new Error("Parameter 'args' must be an object if provided");
-			}
-			let parsedArgs: Record<string, any> = rawArgs;
-			const shape = convertJsonSchemaToZodShape(toolInfo.inputSchema);
-			if (shape) {
-				parsedArgs = z.object(shape).parse(rawArgs ?? {});
-			}
-			return await executeExternalTool(alias, toolInfo.name, parsedArgs, configDir);
-		} catch (error) {
-			const authMessage = detectAuthError(error);
-			if (authMessage) {
-				const aliasHint = typeof alias === 'string' ? alias : normalizedAliases[0];
-				return buildAuthReminder(toolName, aliasHint, authMessage);
-			}
-			return buildToolError(error);
-		}
-	};
+            if (!alias) {
+                alias = normalizedAliases.length === 1 ? normalizedAliases[0] : undefined;
+            }
+            if (!alias) {
+                throw new Error(
+                    `Parameter 'server' is required when multiple aliases are available (${normalizedAliases.join(", ")})`,
+                );
+            }
+            const toolInfo = await discoveryCache.getTool(alias, requestedTool);
+            aliasUsed = alias;
+            toolUsed = toolInfo.name;
+            const rawArgs = normalized.args ?? normalized.arguments ?? {};
+            if (rawArgs && typeof rawArgs !== "object") {
+                throw new Error("Parameter 'args' must be an object if provided");
+            }
+            let parsedArgs: Record<string, any> = rawArgs;
+            const shape = convertJsonSchemaToZodShape(toolInfo.inputSchema);
+            if (shape) {
+                parsedArgs = z.object(shape).parse(rawArgs ?? {});
+            }
+            return await executeExternalTool(alias, toolInfo.name, parsedArgs, configDir);
+        } catch (error) {
+            const authMessage = detectAuthError(error);
+            if (authMessage) {
+                const aliasHint = typeof alias === 'string' ? alias : normalizedAliases[0];
+                return buildAuthReminder(toolName, aliasHint, authMessage);
+            }
+            const message = error instanceof Error ? error.message : String(error ?? "Unknown error");
+            const ctx = aliasUsed && toolUsed ? `${aliasUsed}:${toolUsed}` : undefined;
+            const wrapped = ctx ? new Error(`Failed calling ${ctx}: ${message}`) : new Error(message);
+            return buildToolError(wrapped);
+        }
+    };
 
 	server.tool(toolName, description, schemaShape, handler);
 	registeredNames.add(toolName);
@@ -666,16 +673,41 @@ function renderArgs(
 }
 
 function renderValue(value: unknown, context: Record<string, unknown>): unknown {
-	if (typeof value === "string") {
-		return processTemplate(value, context).result;
-	}
-	if (Array.isArray(value)) {
-		return value.map((entry) => renderValue(entry, context));
-	}
-	if (value && typeof value === "object") {
-		return renderArgs(value as Record<string, unknown>, context);
-	}
-	return value;
+    if (typeof value === "string") {
+        // If the value is exactly a single placeholder, return the raw
+        // context value without stringifying to preserve types (number, boolean, arrays, objects)
+        const fullMatch = value.match(/^\s*\{\{\s*([^}]+)\s*\}\}\s*$/);
+        if (fullMatch) {
+            const key = fullMatch[1].trim();
+            if (Object.prototype.hasOwnProperty.call(context, key)) {
+                return (context as any)[key];
+            }
+        }
+
+        // Otherwise render the template to a string, then attempt light coercion
+        // for simple primitives (number/boolean/null). Mixed content stays string.
+        const rendered = processTemplate(value, context).result;
+        const trimmed = rendered.trim();
+        // number: integers and floats, with optional leading '-'
+        if (/^-?\d+(?:\.\d+)?$/.test(trimmed)) {
+            const n = Number(trimmed);
+            if (Number.isFinite(n)) return n;
+        }
+        // boolean
+        if (trimmed === "true") return true;
+        if (trimmed === "false") return false;
+        // null
+        if (trimmed === "null") return null;
+        // As a last resort, keep string
+        return rendered;
+    }
+    if (Array.isArray(value)) {
+        return value.map((entry) => renderValue(entry, context));
+    }
+    if (value && typeof value === "object") {
+        return renderArgs(value as Record<string, unknown>, context);
+    }
+    return value;
 }
 
 function appendStepResult(

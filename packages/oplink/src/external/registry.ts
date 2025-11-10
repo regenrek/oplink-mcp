@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { z } from "zod";
 import type { ServerDefinition } from "mcporter";
+import { loadEnvForConfigDir } from "./safeload-env";
 
 export type ExternalServerRegistry = {
 	configDir: string;
@@ -55,7 +56,18 @@ export async function loadExternalServerRegistry(configDir: string): Promise<Ext
 		);
 	}
 
-	const absoluteConfigDir = path.resolve(configDir);
+    const absoluteConfigDir = path.resolve(configDir);
+
+    // Load .env files from the config directory so ${VAR} placeholders can resolve
+    // Precedence: shell > .env.{NODE_ENV}.local > .env.{NODE_ENV} > .env.local > .env
+    // Shell values are never overridden.
+    try {
+        loadEnvForConfigDir(absoluteConfigDir);
+    } catch (error) {
+        // Keep non-fatal: invalid .env should not crash registry loading
+        const message = error instanceof Error ? error.message : String(error);
+        console.error(`Warning: failed to load .env files from ${absoluteConfigDir}: ${message}`);
+    }
 	const registryPath = path.join(absoluteConfigDir, "servers.json");
 
 	let raw: string;

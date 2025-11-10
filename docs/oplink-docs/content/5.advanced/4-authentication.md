@@ -42,7 +42,10 @@ HTTP server (header):
 }
 ```
 
-Export the variables in your shell before starting Oplink:
+Supplying secrets:
+
+- Place them in `.env` files inside your `--config` directory (auto‑loaded by Oplink), or
+- Export them in your shell (shell values take precedence):
 
 ```bash
 export CONTEXT7_TOKEN="..."
@@ -88,6 +91,13 @@ Advanced (bring-your-own client):
 
 If omitted, mcporter will use device/browser flow and cache tokens automatically.
 
+## Atlassian: Cloud vs Server/Data Center
+
+- Cloud: Use `JIRA_URL=https://<org>.atlassian.net` with `JIRA_USERNAME=<email>` and `JIRA_API_TOKEN`. Confluence uses analogous envs.
+- Server/Data Center: Use `JIRA_URL=https://jira.internal` with `JIRA_PERSONAL_TOKEN` (no username), and `CONFLUENCE_PERSONAL_TOKEN` for Confluence. Set `JIRA_SSL_VERIFY=false` (and `CONFLUENCE_SSL_VERIFY=false`) when using self‑signed certs.
+
+Place `.env` inside your `--config` directory so Oplink auto‑loads it and passes env to Docker (`-e VAR`).
+
 ## Example: Two Servers (API Key + OAuth)
 
 This example wires both patterns:
@@ -116,10 +126,10 @@ This example wires both patterns:
 }
 ```
 
-Load the env and run:
+Run with project `.env` files:
 
 ```bash
-set -a; source examples/linear-discord-demo/.env; set +a
+# Put secrets into examples/linear-discord-demo/.env
 pnpm -r --filter ./packages/oplink dev -- --config examples/linear-discord-demo/.mcp-workflows
 ```
 

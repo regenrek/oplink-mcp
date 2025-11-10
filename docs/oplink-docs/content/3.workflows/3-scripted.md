@@ -40,9 +40,12 @@ Common step keys
 
 Parameter handling
 
-- YAML parameters map to runtime validation (Zod). Types: `string`, `number`, `boolean`, enums, etc.
+- YAML parameters map to runtime validation (Zod). Types: `string`, `number`, `boolean`, `array`, `object`, and `enum`.
 - Required/optional and defaults are enforced before steps run.
 - Rendered args use the context from parameters and any prior `save_as` values.
+- Type‑preserving args:
+  - If an arg is exactly a single placeholder like `"{{ limit }}"`, Oplink injects the underlying value with its original type (number/boolean/array/object).
+  - If an arg contains mixed text (e.g., `"page={{ limit }}"`), the result is a string. Pure numeric/boolean strings (`"20"`, `"true"`) are coerced to numbers/booleans when the whole value is just the placeholder.
 
 Why scripted
 

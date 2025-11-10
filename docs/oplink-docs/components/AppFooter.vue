@@ -10,7 +10,7 @@ const { footer } = useAppConfig();
         href="https://github.com/regenrek/oplink"
         target="_blank"
         color="primary"
-      >dx0</ULink> and <ULink
+      >Kevin Kern</ULink> and <ULink
         class="text-red-400"
         href="https://www.oplink.ai"
         target="_blank"

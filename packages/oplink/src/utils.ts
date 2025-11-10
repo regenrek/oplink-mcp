@@ -213,8 +213,8 @@ export function appendFormattedTools(
  * @returns Object with the processed string and a set of parameters that were used
  */
 export function processTemplate(
-	template: string,
-	params: TemplateParams,
+    template: string,
+    params: TemplateParams,
 ): { result: string; usedParams: Set<string> } {
 	const usedParams = new Set<string>();
 
@@ -229,17 +229,17 @@ export function processTemplate(
 	}
 
 	// Replace {{ paramName }} with actual values
-	const result = template.replace(
-		/\{\{\s*([^}]+)\s*\}\}/g,
-		(match, paramName) => {
-			const trimmedName = paramName.trim();
-			if (trimmedName in params) {
-				usedParams.add(trimmedName);
-				return String(params[trimmedName]);
-			}
-			return match; // Keep original placeholder if parameter not found
-		},
-	);
+    const result = template.replace(
+        /\{\{\s*([^}]+)\s*\}\}/g,
+        (match, paramName) => {
+            const trimmedName = paramName.trim();
+            if (trimmedName in params) {
+                usedParams.add(trimmedName);
+                return String(params[trimmedName]);
+            }
+            return match; // Keep original placeholder if parameter not found
+        },
+    );
 
 	return { result, usedParams };
 }

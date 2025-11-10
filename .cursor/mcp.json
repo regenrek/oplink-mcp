@@ -1,12 +1,30 @@
 {
 	"mcpServers": {
-		"oplink": {
+		"oplink-atlassian": {
+			"command": "node",
+			"args": [
+				"/Users/kregenrek/projects/mcp/oplink/packages/cli/bin/oplink.mjs",
+				"server",
+				"--config",
+				"examples/atlassian-demo/.mcp-workflows"
+			]
+		},
+		"oplink-deepwiki": {
 			"command": "node",
 			"args": [
 				"/Users/kregenrek/projects/mcp/oplink/packages/cli/bin/oplink.mjs",
 				"server",
 				"--config",
 				"examples/deepwiki-demo/.mcp-workflows"
+			]
+		},
+		"oplink-context7": {
+			"command": "node",
+			"args": [
+				"/Users/kregenrek/projects/mcp/oplink/packages/cli/bin/oplink.mjs",
+				"server",
+				"--config",
+				"examples/context7-demo/.mcp-workflows"
 			]
 		},
 		"oplink-frontend": {
@@ -16,10 +34,7 @@
 				"server",
 				"--config",
 				"examples/frontend-mcp-demo/.mcp-workflows"
-			],
-			"env": {
-				"FRONTEND_ROOT": "/Users/kregenrek/projects/mcp/oplink/examples/frontend-mcp-demo"
-			}
+			]
 		},
 		"oplink-linear-discord": {
 			"command": "node",
@@ -28,30 +43,7 @@
 				"server",
 				"--config",
 				"examples/linear-discord-demo/.mcp-workflows"
-			],
-			"env": {
-				"LINEAR_API_KEY": "${LINEAR_API_KEY}",
-				"DISCORD_BOT_TOKEN": "${DISCORD_BOT_TOKEN}"
-			}
-		},
-		"oplink-atlassian": {
-			"command": "node",
-			"args": [
-				"/Users/kregenrek/projects/mcp/oplink/packages/cli/bin/oplink.mjs",
-				"server",
-				"--config",
-				"examples/atlassian-demo/.mcp-workflows"
-			],
-			"env": {
-				"JIRA_URL": "${JIRA_URL}",
-				"JIRA_USERNAME": "${JIRA_USERNAME}",
-				"JIRA_API_TOKEN": "${JIRA_API_TOKEN}",
-				"CONFLUENCE_URL": "${CONFLUENCE_URL}",
-				"CONFLUENCE_USERNAME": "${CONFLUENCE_USERNAME}",
-				"CONFLUENCE_API_TOKEN": "${CONFLUENCE_API_TOKEN}",
-				"JIRA_PROJECTS_FILTER": "${JIRA_PROJECTS_FILTER:-}",
-				"CONFLUENCE_SPACES_FILTER": "${CONFLUENCE_SPACES_FILTER:-}"
-			}
+			]
 		}
 	}
 }

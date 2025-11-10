@@ -26,7 +26,27 @@ Example (stdio + OAuth)
 
 Rules
 
-- Unresolved `${VAR}` placeholders fail startup (by design). Export them or remove the env block.
+- Oplink auto‑loads `.env` files from your `--config` directory before expansion. Precedence: shell > `.env.{NODE_ENV}.local` > `.env.{NODE_ENV}` > `.env.local` > `.env`.
+- Unresolved `${VAR}` placeholders still fail startup (by design).
+- IDE config: point your IDE at Oplink only (stdio command). Do not duplicate external servers in IDE files — keep them in `.mcp-workflows/servers.json`.
+
+### IDE Setup (Cursor example)
+
+```json
+{
+  "mcpServers": {
+    "oplink-atlassian": {
+      "command": "node",
+      "args": [
+        "/path/to/repo/packages/cli/bin/oplink.mjs",
+        "server",
+        "--config",
+        "/path/to/repo/examples/atlassian-demo/.mcp-workflows"
+      ]
+    }
+  }
+}
+```
 - `tokenCacheDir` is resolved relative to the config dir.
 - `servers.json` must contain at least one server.
 

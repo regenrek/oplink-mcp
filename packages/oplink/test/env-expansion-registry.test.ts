@@ -18,6 +18,7 @@ describe("stdio env placeholder expansion (generic)", () => {
   afterEach(async () => {
     await fs.rm(tempDir, { recursive: true, force: true });
     delete process.env.DISCORD_BOT_TOKEN;
+    delete process.env.API_TOKEN;
   });
 
   it("expands API_TOKEN into SERVER_TOKEN env", async () => {

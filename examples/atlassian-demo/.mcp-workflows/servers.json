@@ -8,27 +8,28 @@
         "-i",
         "--rm",
         "-e", "JIRA_URL",
-        "-e", "JIRA_USERNAME",
-        "-e", "JIRA_API_TOKEN",
+        "-e", "JIRA_PERSONAL_TOKEN",
+        "-e", "JIRA_SSL_VERIFY",
         "-e", "CONFLUENCE_URL",
-        "-e", "CONFLUENCE_USERNAME",
-        "-e", "CONFLUENCE_API_TOKEN",
+        "-e", "CONFLUENCE_PERSONAL_TOKEN",
+        "-e", "CONFLUENCE_SSL_VERIFY",
         "-e", "JIRA_PROJECTS_FILTER",
         "-e", "CONFLUENCE_SPACES_FILTER",
+        "-e", "MCP_VERBOSE",
         "ghcr.io/sooperset/mcp-atlassian:latest"
       ],
       "env": {
         "JIRA_URL": "${JIRA_URL}",
-        "JIRA_USERNAME": "${JIRA_USERNAME}",
-        "JIRA_API_TOKEN": "${JIRA_API_TOKEN}",
+        "JIRA_PERSONAL_TOKEN": "${JIRA_PERSONAL_TOKEN:-}",
+        "JIRA_SSL_VERIFY": "${JIRA_SSL_VERIFY:-false}",
         "CONFLUENCE_URL": "${CONFLUENCE_URL}",
-        "CONFLUENCE_USERNAME": "${CONFLUENCE_USERNAME}",
-        "CONFLUENCE_API_TOKEN": "${CONFLUENCE_API_TOKEN}",
+        "CONFLUENCE_PERSONAL_TOKEN": "${CONFLUENCE_PERSONAL_TOKEN:-}",
+        "CONFLUENCE_SSL_VERIFY": "${CONFLUENCE_SSL_VERIFY:-false}",
         "JIRA_PROJECTS_FILTER": "${JIRA_PROJECTS_FILTER:-}",
-        "CONFLUENCE_SPACES_FILTER": "${CONFLUENCE_SPACES_FILTER:-}"
+        "CONFLUENCE_SPACES_FILTER": "${CONFLUENCE_SPACES_FILTER:-}",
+        "MCP_VERBOSE": "${MCP_VERBOSE:-true}"
       },
-      "description": "Atlassian MCP server for Jira and Confluence (Cloud)"
+      "description": "Atlassian MCP server for Jira and Confluence (Server/DC)"
     }
   }
 }
-

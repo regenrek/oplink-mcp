@@ -1,5 +1,6 @@
 import crypto from "node:crypto";
 import { z } from "zod";
+import uFuzzy from "@leeoniya/ufuzzy";
 import type { ServerToolInfo } from "mcporter";
 import { ExternalServerError, listExternalServerTools } from "../external-tools";
 
@@ -31,6 +32,10 @@ interface CacheEntry {
 	refreshedAt: number;
 	tools: Map<string, ServerToolInfo>;
 	lastError?: CacheErrorState;
+	// Precomputed search haystacks for suggestions
+	names: string[];
+	namesNorm: string[];
+	fieldsNorm: string[]; // name + " " + description
 }
 
 export interface CacheErrorState {
@@ -107,11 +112,19 @@ export class ExternalToolCache {
 				}
 				tools.set(tool.name, tool);
 			}
+			const names = Array.from(tools.keys());
+			const namesNorm = names.map((n) => normalizeText(n));
+			const fieldsNorm = Array.from(tools.values()).map((t) =>
+				normalizeText(`${t.name} ${t.description ?? ""}`),
+			);
 			this.entries.set(alias, {
 				alias,
 				versionHash: entry.versionHash,
 				refreshedAt: entry.refreshedAt,
 				tools,
+				names,
+				namesNorm,
+				fieldsNorm,
 			});
 		}
 	}
@@ -146,8 +159,13 @@ async ensureAlias(alias: string, options?: EnsureOptions): Promise<void> {
 		}
 		if (!tool) {
 			const inspectHint = `npx mcporter list ${alias} --config ${this.configDir}`;
+			const suggestions = this.suggestToolsFromEntry(entry, normalizedTool, 3);
+			const hint =
+				suggestions.length > 0
+					? ` Did you mean: ${suggestions.join(", ")}?`
+					: "";
 			throw new ExternalServerError(
-				`Server '${alias}' does not expose tool '${normalizedTool}'. Run '${inspectHint}' to inspect available tools.`,
+				`Server '${alias}' does not expose tool '${normalizedTool}'. Run '${inspectHint}' to inspect available tools.${hint}`,
 			);
 		}
 		return tool;
@@ -210,11 +228,19 @@ private async refreshAlias(alias: string): Promise<CacheEntry> {
 			for (const tool of tools) {
 				map.set(tool.name, tool);
 			}
+			const names = Array.from(map.keys());
+			const namesNorm = names.map((n) => normalizeText(n));
+			const fieldsNorm = Array.from(map.values()).map((t) =>
+				normalizeText(`${t.name} ${t.description ?? ""}`),
+			);
 			const entry: CacheEntry = {
 				alias: normalized,
 				versionHash: hashTools(tools),
 				refreshedAt: now,
 				tools: map,
+				names,
+				namesNorm,
+				fieldsNorm,
 			};
 			this.entries.set(normalized, entry);
 			await this.persistSnapshot();
@@ -267,10 +293,47 @@ private async refreshAlias(alias: string): Promise<CacheEntry> {
 			console.error("Failed to persist external tool cache:", error);
 		}
 	}
+
+	private suggestToolsFromEntry(entry: CacheEntry, query: string, limit = 3): string[] {
+		const q = normalizeText(query);
+		if (!q) return [];
+		const suggestions: string[] = [];
+		try {
+			const ufStrict = new uFuzzy({ intraMode: 0 });
+			const resA: any = ufStrict.search(entry.namesNorm, q, 0, Math.max(10, limit));
+			if (Array.isArray(resA) && Array.isArray(resA[2])) {
+				const order: number[] = resA[2];
+				for (const idx of order) {
+					suggestions.push(entry.names[idx]);
+					if (suggestions.length >= limit) break;
+				}
+			}
+			if (suggestions.length < limit) {
+				const ufLen = new uFuzzy({ intraMode: 1 });
+				const resB: any = ufLen.search(entry.fieldsNorm, q, 0, Math.max(15, limit * 2));
+				if (Array.isArray(resB) && Array.isArray(resB[2])) {
+					const orderB: number[] = resB[2];
+					for (const idx of orderB) {
+						const name = entry.names[idx];
+						if (!suggestions.includes(name)) suggestions.push(name);
+						if (suggestions.length >= limit) break;
+					}
+				}
+			}
+		} catch {}
+		return suggestions.slice(0, limit);
+	}
 }
 
 function normalizeAlias(alias: string): string {
 	return alias?.trim();
+}
+
+function normalizeText(input: string): string {
+	return input
+		.toLowerCase()
+		.normalize("NFD")
+		.replace(/[\u0300-\u036f]/g, "");
 }
 
 function hashTools(tools: ServerToolInfo[]): string {

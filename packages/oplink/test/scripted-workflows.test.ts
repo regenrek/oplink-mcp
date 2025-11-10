@@ -102,6 +102,7 @@ describe("scripted workflows", () => {
 		configDir: "/tmp/config",
 	});
 
+
 	const workflowTool = registrations.find((r) => r.name === "take_screenshot");
 	const describeTool = registrations.find((r) => r.name === "describe_tools");
 	expect(workflowTool).toBeDefined();
@@ -149,6 +150,28 @@ describe("scripted workflows", () => {
 			configDir: "/tmp/config",
 		}),
 	).rejects.toThrow(/references unknown tool 'chrome-devtools:missing'/);
+	});
+
+	it("wraps step errors with alias/tool and step index", async () => {
+		listToolsMock.mockResolvedValueOnce([
+			{ name: "jira_search", description: "Search", inputSchema: { type: "object" } },
+		]);
+		executeExternalToolMock.mockRejectedValueOnce(new Error("Error calling tool 'search'"));
+
+		const config = {
+			wf: {
+				runtime: "scripted",
+				steps: [
+					{ call: "atlassian:jira_search", args: { jql: "assignee = me()" } },
+				],
+			},
+		};
+
+    await registerToolsFromConfig(server as any, config, { configDir: "/tmp/config" });
+    const workflowTool = registrations.find((r) => r.name === "wf");
+    const res = await workflowTool!.handler({});
+    const text = (res.content?.[0] as any)?.text ?? "";
+    expect(text).toMatch(/Step #1 \(atlassian:jira_search\) failed: Error calling tool 'search'/);
 	});
 
 	it("requires a configDir for scripted workflows", async () => {
