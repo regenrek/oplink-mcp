@@ -1,6 +1,6 @@
 {
   "name": "@oplink/test-utils",
-  "version": "0.0.2",
+  "version": "0.0.1",
   "private": true,
   "description": "Shared test utilities for Oplink SDK and CLI",
   "type": "module",

@@ -15,6 +15,20 @@ export default defineBuildConfig({
 			outDir: "dist/presets",
 			pattern: "**/*.yaml",
 		},
+		// Bundle JSON Schemas used by `oplink validate`
+		{
+			builder: "copy",
+			input: "../../schema",
+			outDir: "dist/schema",
+			pattern: "*.json",
+		},
+		// Also include local helper meta-schema file
+		{
+			builder: "copy",
+			input: "schema",
+			outDir: "dist/schema",
+			pattern: "json-schema-2020-12.json",
+		},
 	],
 	hooks: {
 		"rollup:options"(ctx, options) {

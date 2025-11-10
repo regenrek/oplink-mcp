@@ -31,10 +31,9 @@ export default defineCommand({
     const workflowsPath = path.join(base, "workflows.yaml");
     const serversPath = path.join(base, "servers.json");
 
-    const ajv = new Ajv({ allErrors: true, strict: false });
-    addFormats(ajv);
-
     const schemaDir = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..", "schema");
+    const ajv = new Ajv({ allErrors: true, strict: false, validateSchema: false, meta: false });
+    addFormats(ajv);
     const wfSchemaPath = path.join(schemaDir, "oplink-workflows.schema.json");
     const svSchemaPath = path.join(schemaDir, "oplink-servers.schema.json");
 
@@ -87,4 +86,3 @@ export default defineCommand({
     }
   },
 });
-

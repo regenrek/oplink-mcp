@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Core schema meta-schema",
+  "type": ["object", "boolean"],
+  "properties": {
+    "$id": { "type": "string", "format": "uri-reference" },
+    "$schema": { "type": "string", "format": "uri" },
+    "$ref": { "type": "string", "format": "uri-reference" },
+    "$anchor": { "type": "string", "pattern": "^[A-Za-z][-A-Za-z0-9.:_]*$" },
+    "$dynamicRef": { "type": "string", "format": "uri-reference" },
+    "$dynamicAnchor": { "type": "string", "pattern": "^[A-Za-z][-A-Za-z0-9.:_]*$" },
+    "$vocabulary": { "type": "object", "propertyNames": {"format": "uri"}, "additionalProperties": {"type": "boolean"} },
+    "$comment": { "type": "string" },
+    "type": { "$ref": "https://json-schema.org/draft/2020-12/meta/core#/$defs/simpleTypes" },
+    "enum": { "type": "array" },
+    "const": true
+  },
+  "$defs": {
+    "simpleTypes": {
+      "enum": ["array","boolean","integer","null","number","object","string"]
+    }
+  }
+}
+
