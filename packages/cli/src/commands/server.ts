@@ -5,7 +5,6 @@ import { dirname, join } from "pathe";
 
 import { defineCommand } from "citty";
 import { consola } from "consola";
-import { createMcpServer, loadAndMergeConfig, startServer } from "@oplink/core";
 
 import { logger } from "../utils/logger";
 import { cwdArgs, logLevelArgs } from "./_shared";
@@ -36,7 +35,7 @@ export default defineCommand({
 			description: "Path to a specific user configuration file or directory",
 		},
 	},
-	async run(ctx) {
+  async run(ctx) {
 		// Ensure no logs go to STDOUT in server mode; MCP JSON must own STDOUT
 		// Route consola output to STDERR for the lifetime of this command
 		// This helps silence third-party libs that use consola under the hood
@@ -62,7 +61,9 @@ export default defineCommand({
 			if (ctx.args.logLevel) {
 				process.env.OPLINK_LOG_LEVEL = String(ctx.args.logLevel);
 			}
-				const finalConfig = loadAndMergeConfig(configPath);
+                // Dynamically import core at runtime to avoid bundling it into the CLI
+                const { createMcpServer, loadAndMergeConfig, startServer } = await import("@oplink/core");
+                const finalConfig = loadAndMergeConfig(configPath);
 
 			// During server creation we may talk to external MCP servers via mcporter.
 			// Some libraries may still write to STDOUT; temporarily mirror STDOUT to STDERR
@@ -73,18 +74,16 @@ export default defineCommand({
 			};
 
 				let server: Awaited<ReturnType<typeof createMcpServer>> | null = null;
-				try {
-					server = await createMcpServer(finalConfig, version, {
-						configDir: configPath,
-					});
-				} finally {
-					(process.stdout as any).write = originalWrite;
-				}
+                try {
+                    server = await createMcpServer(finalConfig, version, { configDir: configPath });
+                } finally {
+                    (process.stdout as any).write = originalWrite;
+                }
 
 			if (!server) {
 				throw new Error("MCP server failed to initialize");
 			}
-				await startServer(server, configPath);
+            await startServer(server, configPath);
 		} catch (error) {
 			console.error("Failed to start MCP server:", error);
 			process.exit(1);

@@ -49,11 +49,12 @@ export default defineConfig({
   plugins: [
     {
       name: 'externalize-bare-deps',
-      resolveId(id) {
-        if (!id.startsWith('.') && !id.startsWith('/') && !id.startsWith('\0')) {
-          return { id, external: true } as any;
-        }
-        return null;
+      resolveId(id, importer) {
+        // Do not externalize entry points or relative/absolute/virtual ids
+        if (!importer) return null;
+        if (id.startsWith('.') || id.startsWith('/') || id.startsWith('\0')) return null;
+        // Externalize all bare specifiers (node_modules and workspace deps)
+        return { id, external: true } as any;
       },
     },
   ],
