@@ -62,4 +62,10 @@ export default defineAppConfig({
 			],
 		},
 	},
+	contentMermaid: {
+    enabled: true,
+    // Use a simple built‑in element as spinner to avoid missing component issues
+    spinnerComponent: 'div',
+    // mermaid theme handled client‑side; leave default
+	},
 });

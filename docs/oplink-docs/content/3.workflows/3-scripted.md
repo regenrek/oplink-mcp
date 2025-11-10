@@ -34,7 +34,7 @@ Common step keys
 
 - `call` – `alias:tool_name` for an external tool
 - `args` – object; supports mustache templating with the current context
-- `save_as` – store the tool result to reuse later (e.g., `save_as: issue`)
+- `saveAs` – store the tool result to reuse later (e.g., `saveAs: issue`)
 - `requires` – only run a step if a context key exists
 - `quiet` – suppress per‑step log lines in the aggregated output
 

@@ -4,7 +4,7 @@
   "title": "Oplink Workflows",
   "type": "object",
   "description": "Map of workflow names to definitions",
-  "definitions": {
+  "$defs": {
     "parameter": {
       "type": "object",
       "properties": {
@@ -12,90 +12,98 @@
         "description": { "type": "string" },
         "required": { "type": "boolean" },
         "enum": { "type": "array", "items": { "type": ["string", "number", "boolean"] } },
-        "items": { "$ref": "#/definitions/parameter" },
+        "items": { "$ref": "#/$defs/parameter" },
         "properties": {
           "type": "object",
-          "additionalProperties": { "$ref": "#/definitions/parameter" }
+          "additionalProperties": { "$ref": "#/$defs/parameter" }
         },
         "default": { "type": ["string", "number", "boolean", "array", "object", "null"] }
       },
       "required": ["type"],
       "additionalProperties": false
+    },
+    "parametersMap": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/parameter"
+      }
+    },
+    "step": {
+      "type": "object",
+      "properties": {
+        "call": { "type": "string", "minLength": 1 },
+        "args": { "type": "object" },
+        "saveAs": { "type": "string", "minLength": 1 },
+        "requires": { "type": "string", "minLength": 1 },
+        "quiet": { "type": "boolean" }
+      },
+      "required": ["call"],
+      "additionalProperties": false
+    },
+    "scriptedWorkflow": {
+      "type": "object",
+      "properties": {
+        "description": { "type": "string" },
+        "prompt": { "type": "string" },
+        "runtime": { "type": "string", "enum": ["scripted"] },
+        "parameters": { "$ref": "#/$defs/parametersMap" },
+        "tools": { "type": ["string", "object"] },
+        "toolMode": { "type": "string", "enum": ["sequential", "situational"] },
+        "context": { "type": "string" },
+        "steps": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/step" },
+          "minItems": 1
+        }
+      },
+      "required": ["steps"],
+      "additionalProperties": false,
+      "not": { "required": ["externalServers"] }
+    },
+    "externalWorkflow": {
+      "type": "object",
+      "properties": {
+        "description": { "type": "string" },
+        "prompt": { "type": "string" },
+        "runtime": { "type": "string", "enum": ["external"] },
+        "parameters": { "$ref": "#/$defs/parametersMap" },
+        "tools": { "type": ["string", "object"] },
+        "toolMode": { "type": "string", "enum": ["sequential", "situational"] },
+        "context": { "type": "string" },
+        "externalServers": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1
+        }
+      },
+      "required": ["externalServers", "prompt"],
+      "additionalProperties": false,
+      "not": { "required": ["steps"] }
+    },
+    "promptWorkflow": {
+      "type": "object",
+      "properties": {
+        "description": { "type": "string" },
+        "prompt": { "type": "string" },
+        "runtime": { "type": "string", "enum": ["prompt"] },
+        "parameters": { "$ref": "#/$defs/parametersMap" },
+        "tools": { "type": ["string", "object"] },
+        "toolMode": { "type": "string", "enum": ["sequential", "situational"] },
+        "context": { "type": "string" }
+      },
+      "required": ["prompt"],
+      "additionalProperties": false,
+      "not": { "anyOf": [ { "required": ["steps"] }, { "required": ["externalServers"] } ] }
     }
   },
-  "additionalProperties": {
-    "type": "object",
-    "properties": {
-      "description": { "type": "string" },
-      "prompt": { "type": "string" },
-      "runtime": { "type": "string", "enum": ["prompt", "scripted", "external"] },
-      "externalServers": {
-        "type": "array",
-        "items": { "type": "string", "minLength": 1 }
-      },
-      "parameters": {
-        "type": "object",
-        "additionalProperties": {
-          "type": "object",
-          "properties": {
-            "type": { "type": "string", "enum": ["string", "number", "boolean", "array", "object", "enum"] },
-            "description": { "type": "string" },
-            "required": { "type": "boolean" },
-            "enum": { "type": "array", "items": { "type": ["string", "number", "boolean"] } },
-            "items": { "$ref": "#/definitions/parameter" },
-            "properties": {
-              "type": "object",
-              "additionalProperties": { "$ref": "#/definitions/parameter" }
-            },
-            "default": { "type": ["string", "number", "boolean", "array", "object", "null"] }
-          },
-          "required": ["type"],
-          "additionalProperties": false
-        }
-      },
-      "steps": {
-        "type": "array",
-        "items": {
-          "type": "object",
-          "properties": {
-            "call": { "type": "string", "minLength": 1 },
-            "args": { "type": "object" },
-            "save_as": { "type": "string", "minLength": 1 },
-            "requires": { "type": "string", "minLength": 1 },
-            "quiet": { "type": "boolean" }
-          },
-          "required": ["call"],
-          "additionalProperties": true
-        }
-      },
-      "tools": {
-        "description": "Optional shorthand for situational/sequential tool lists",
-        "oneOf": [
-          { "type": "string" },
-          {
-            "type": "object",
-            "additionalProperties": { "type": ["string", "object"] }
-          }
-        ]
-      },
-      "toolMode": { "type": "string", "enum": ["sequential", "situational"] },
-      "context": { "type": "string" }
-    },
-    "allOf": [
-      {
-        "if": { "properties": { "runtime": { "const": "scripted" } } },
-        "then": { "required": ["steps" ] }
-      },
-      {
-        "if": { "properties": { "externalServers": { "minItems": 1 } } },
-        "then": { "required": ["prompt"] }
-      }
-    ],
-    "additionalProperties": true
-  }
+  "patternProperties": {
+    ".*": {
+      "oneOf": [
+        { "$ref": "#/$defs/scriptedWorkflow" },
+        { "$ref": "#/$defs/externalWorkflow" },
+        { "$ref": "#/$defs/promptWorkflow" }
+      ]
+    }
+  },
+  "additionalProperties": false
 }
-
-/*
- Note: this schema defines a recursive reference to parameter definitions via
- `#/definitions/parameter`. Define the shared parameter shape here.
-*/

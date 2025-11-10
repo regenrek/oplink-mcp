@@ -3,6 +3,7 @@
 # Auto-discovery workflows
 jira_helper:
   description: "Access Jira MCP tools for issue management"
+  runtime: external
   prompt: |
     Use Jira MCP tools to search issues, create issues, update status, add comments, etc.
     Call describe_tools({ "workflow": "jira_helper" }) first to see available tools.
@@ -12,6 +13,7 @@ jira_helper:
 
 confluence_helper:
   description: "Access Confluence MCP tools for documentation"
+  runtime: external
   prompt: |
     Use Confluence MCP tools to search pages, create pages, update content, etc.
     Call describe_tools({ "workflow": "confluence_helper" }) first to see available tools.
@@ -38,7 +40,7 @@ list_my_issues:
       default: 20
   steps:
     - call: atlassian:jira_search
-      save_as: search_result
+      saveAs: search_result
       args:
         jql: |
           assignee = currentUser() 
@@ -117,4 +119,3 @@ get_confluence_page_content:
     - call: atlassian:confluence_get_page
       args:
         page_id: "{{ page_id }}"
-

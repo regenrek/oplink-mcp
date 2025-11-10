@@ -1,0 +1,43 @@
+universal_helper:
+  description: "Proxy Chrome DevTools + DeepWiki MCP tools via auto‑discovery"
+  prompt: |
+    You expose all tools discovered from the listed external MCP servers.
+    Accept a JSON object with the fields:
+      - tool: the tool name to run (e.g., chrome-devtools:take_screenshot or deepwiki:deepwiki_search)
+      - server (optional): the alias to use when tool is not prefixed
+      - args (optional): arguments for the tool call
+    Use describe_tools({ "workflow": "universal_helper" }) to discover available tools.
+  externalServers:
+    - chrome-devtools
+    - deepwiki
+
+screenshot_and_lookup:
+  description: "Scripted example: take a screenshot of a page and look up related info in DeepWiki"
+  runtime: scripted
+  parameters:
+    url:
+      type: "string"
+      description: "Page URL to capture (http/https)"
+      required: true
+    query:
+      type: "string"
+      description: "DeepWiki search query"
+      required: true
+    format:
+      type: "string"
+      enum: ["png", "jpeg", "webp"]
+      default: "png"
+  steps:
+    - call: chrome-devtools:navigate_page
+      args:
+        type: url
+        url: "{{ url }}"
+        ignoreCache: false
+    - call: chrome-devtools:take_screenshot
+      args:
+        format: "{{ format }}"
+        fullPage: true
+    - call: deepwiki:deepwiki_search
+      args:
+        query: "{{ query }}"
+

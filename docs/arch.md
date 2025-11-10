@@ -12,7 +12,7 @@ flowchart LR
   subgraph O[Oplink MCP Server]
     O1[Tool Orchestrator]
     O2[Workflows YAML / workflows.yaml]
-    O3[Server Registry / .mcp-workflows/servers.json]
+    O3[Server Registry / .mcp-workflows/servers.json + .env]
   end
 
   subgraph M[mcporter Runtime]
@@ -47,8 +47,10 @@ flowchart LR
   classDef note fill:#f6f8fa,stroke:#d0d7de,color:#24292f;
   N1[Only workflow tools are exposed to the MCP client; helper tools stay internal.]:::note
   N2[mcporter handles discovery, auth, stdio/http transport, retries, and connection reuse.]:::note
+  N3[.env is auto‑loaded from the --config directory and passed to external servers, e.g., Docker -e.]:::note
   O1 --- N1
   M1 --- N2
+  O3 --- N3
 ```
 
 ## Execution Steps
@@ -59,3 +61,29 @@ flowchart LR
 4. When the prompt calls a tool, Oplink forwards the request to mcporter.
 5. mcporter launches/connects to the external MCP server and executes the tool.
 6. Results stream back to Oplink, which aggregates them and returns the final response to the MCP client.
+
+## Configuration & Environment
+
+- Single source of truth: external MCP servers live in `.mcp-workflows/servers.json`. Place `.env` next to it; Oplink auto‑loads it when started with `--config <dir>`.
+- IDEs (Cursor, Windsurf, etc.) should point only to the Oplink stdio server; do not duplicate external servers in IDE config.
+- For Atlassian:
+  - Cloud uses `JIRA_USERNAME` + `JIRA_API_TOKEN` (and Confluence equivalents).
+  - Server/Data Center uses `JIRA_PERSONAL_TOKEN` (and `CONFLUENCE_PERSONAL_TOKEN`); set optional `*_SSL_VERIFY=false` for self‑signed certs.
+
+## Workflow Shapes (Schema)
+
+The schema defines three explicit shapes (runtime optional):
+- Scripted: requires `steps`, disallows `externalServers`. Step keys: `call`, `args`, `saveAs`, `requires`, `quiet`.
+- External: requires `externalServers` + `prompt`, disallows `steps`.
+- Prompt‑only: requires `prompt`, disallows `steps` and `externalServers`.
+
+This eliminates editor warnings and keeps authoring simple.
+
+## Error Handling & Suggestions
+
+- Unknown tool names include "Did you mean …" suggestions (uFuzzy) from the live catalog.
+- External call errors include alias:tool context and step index (for scripted flows).
+
+## Caching & Reproducibility (Planned)
+
+- Discovery cache persists across runs; doctor/verify commands and a catalog lockfile ensure reproducible catalogs and fast startup at scale.

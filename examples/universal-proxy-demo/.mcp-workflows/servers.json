@@ -1,0 +1,17 @@
+{
+  "$schema": "../../../schema/oplink-servers.schema.json",
+  "servers": {
+    "chrome-devtools": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "chrome-devtools-mcp@latest"],
+      "description": "Chrome DevTools MCP for live browser debugging and performance analysis"
+    },
+    "deepwiki": {
+      "type": "http",
+      "url": "https://mcp.deepwiki.com/sse",
+      "description": "Devin DeepWiki knowledge base (HTTP SSE)"
+    }
+  }
+}
+

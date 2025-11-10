@@ -45,5 +45,24 @@
 				"examples/linear-discord-demo/.mcp-workflows"
 			]
 		}
+		,
+		"oplink-universal-proxy": {
+			"command": "node",
+			"args": [
+				"/Users/kregenrek/projects/mcp/oplink/packages/cli/bin/oplink.mjs",
+				"server",
+				"--config",
+				"examples/universal-proxy-demo/.mcp-workflows"
+			]
+		},
+		"workflows-mcp": {
+			"command": "npx",
+			"args": [
+				"/Users/kregenrek/projects/mcp/oplink/packages/cli/bin/oplink.mjs",
+				"server",
+				"--preset",
+				"thinking,coding,github"
+			]
+		}
 	}
 }

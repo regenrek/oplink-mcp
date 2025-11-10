@@ -1,12 +1,12 @@
 // Configuration for Viber3D documentation
 export default defineNuxtConfig({
-	modules: [
-		"@nuxt/eslint",
-		"@nuxt/image",
-		"@nuxt/ui-pro",
-		"@nuxt/content",
-		"nuxt-og-image",
-	],
+    modules: [
+        "@nuxt/eslint",
+        "@nuxt/image",
+        "@nuxt/ui-pro",
+        "@nuxt/content",
+        "nuxt-og-image",
+    ],
 
 	devtools: {
 		enabled: true,
@@ -14,21 +14,20 @@ export default defineNuxtConfig({
 
 	css: ["~/assets/css/main.css"],
 
-	content: {
-		build: {
-			markdown: {
-				toc: {
-					searchDepth: 1,
-				},
-			},
-		},
-	},
+    content: {
+        build: {
+            markdown: {
+                mdc: true,
+                toc: { searchDepth: 1 },
+            },
+        },
+    },
 
 	future: {
 		compatibilityVersion: 4,
 	},
 
-	compatibilityDate: "2025-03-11",
+    compatibilityDate: "2025-03-11",
 
 	nitro: {
 		prerender: {
@@ -46,9 +45,30 @@ export default defineNuxtConfig({
 		},
 	},
 
-	icon: {
-		provider: "iconify",
-	},
+    icon: {
+        provider: "iconify",
+    },
+
+    hooks: {
+        'content:file:beforeParse': (file: any) => {
+            try {
+                const id = file?._id || ''
+                const ext = (file?.extension || '').toLowerCase()
+                if (!(ext === 'md' || id.endsWith('.md'))) return
+                const body: string = file?.body || ''
+                if (!body) return
+                const mermaidCodeRegex = /```mermaid([\s\S]*?)```/gm
+                if (!mermaidCodeRegex.test(body)) return
+                const replaced = body.replace(mermaidCodeRegex, (_: string, code: string) => {
+                    const encoded = Buffer.from(code.trim()).toString('base64')
+                    return `<Mermaid code="${encoded}"></Mermaid>`
+                })
+                file.body = replaced
+            } catch (e) {
+                console.warn('[mermaid-transform] error', e)
+            }
+        },
+    },
 
 	// llms: {
 	//   domain: 'https://viber3d.instructa.ai/',
