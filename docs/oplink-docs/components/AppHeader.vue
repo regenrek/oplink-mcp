@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import type { ContentNavigationItem } from "@nuxt/content";
+import type { ContentNavigationItem } from '@nuxt/content'
 
-const navigation = inject<Ref<ContentNavigationItem[]>>("navigation");
+const navigation = inject<Ref<ContentNavigationItem[]>>('navigation')
 
-const { header } = useAppConfig();
+const { header } = useAppConfig()
 </script>
 
 <template>
@@ -47,7 +47,7 @@ const { header } = useAppConfig();
       #left
     >
       <NuxtLink :to="header?.to || '/'">
-        <LogoPro class="w-auto h-6 shrink-0" />
+        <AppLogo class="w-auto h-6 shrink-0" />
       </NuxtLink>
 
       <TemplateMenu />

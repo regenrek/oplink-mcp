@@ -3,23 +3,15 @@
     v-slot="{ open }"
     :modal="false"
     :items="[{
-      label: `Starter`,
-      to: 'https://ui-pro-starter.nuxt.dev/'
-    }, {
-      label: `Landing`,
-      to: 'https://landing-template.nuxt.dev/'
-    }, {
-      label: `Docs`,
-      to: 'https://docs-template.nuxt.dev/',
+      label: 'Documentation',
+      to: '/',
       color: 'primary',
       checked: true,
       type: 'checkbox'
     }, {
-      label: `SaaS`,
-      to: 'https://saas-template.nuxt.dev/'
-    }, {
-      label: `Dashboard`,
-      to: 'https://dashboard-template.nuxt.dev/'
+      label: 'GitHub',
+      to: 'https://github.com/regenrek/oplink',
+      target: '_blank'
     }]"
     :ui="{ content: 'w-(--reka-dropdown-menu-trigger-width) min-w-0' }"
     size="xs"

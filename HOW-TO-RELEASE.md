@@ -22,18 +22,29 @@ This is a monorepo with multiple packages:
   - `pnpm test:ci` (runs build + tests non-interactively)
 - Update any user-facing documentation if needed
 
-## Quick Release
+## Quick Release (with Preflight)
 - Patch/minor/major bump and publish:
   - `pnpm dlx tsx scripts/release.ts patch` (or `minor`/`major`)
   - Or use a specific version: `pnpm dlx tsx scripts/release.ts 0.1.0`
-- The script will:
-  - Ensure working tree is clean (fails if uncommitted changes exist)
-  - Bump version in root `package.json` and all package `package.json` files
-  - Create git commit: `chore: release vX.Y.Z`
-  - Create git tag: `vX.Y.Z` with message `Release vX.Y.Z`
-  - Push commit and tags to remote
-  - Publish `@oplink/core` and `oplink` (CLI) to npm with `--access public`
-  - Skip `@oplink/test-utils` (not configured for publishing)
+- The script will now run a preflight before any version bump/tag/publish:
+  1. Verify a clean working tree (fails if uncommitted changes exist)
+  2. Dependency guard for publishable packages (`oplink`, `@oplink/core`):
+     - Rejects runtime specifiers `workspace:` and `catalog:` in `dependencies`, `peerDependencies`, and `optionalDependencies`
+  3. Build once to generate artifacts
+  4. Artifact checks:
+     - CLI: `bin/oplink.mjs`, `dist/schema/oplink-workflows.schema.json`, `dist/schema/oplink-servers.schema.json`, `dist/presets/thinking.yaml`
+     - Core: `dist/presets/thinking.yaml`
+  5. `npm pack --dry-run` must succeed for each publishable package
+  
+  If any preflight step fails, the script aborts before changing versions or creating tags.
+
+- On success, the script then:
+  - Bumps versions in root and all packages
+  - Creates commit `chore: release vX.Y.Z`
+  - Creates tag `vX.Y.Z`
+  - Pushes commit and tags
+  - Publishes `@oplink/core` and `oplink` to npm with `--access public`
+  - Skips `@oplink/test-utils` (not configured for publishing)
 
 ## Sanity Checks (optional but recommended)
 - Build locally before releasing:
@@ -42,6 +53,20 @@ This is a monorepo with multiple packages:
   - Check npm pages: `https://www.npmjs.com/package/oplink` and `https://www.npmjs.com/package/@oplink/core`
   - Test installation: `npx oplink@latest --version`
   - Verify git tag exists: `git tag -l v*`
+
+## Deprecation Policy
+- If an early version has known issues (e.g., missing files or unusable presets), deprecate it to guide users to a working version:
+  - `npm deprecate oplink@<bad> "Deprecated. Please use oplink@<good> or later."`
+  - `npm deprecate @oplink/core@<bad> "Deprecated. Please use @oplink/core@<good> or later."`
+- Prefer deprecating over unpublishing. Only unpublish if absolutely necessary and within the npm time window.
+
+## Troubleshooting Preflight
+- Error about `workspace:`/`catalog:` in deps:
+  - Replace those specifiers with real semver ranges for publishable packages.
+- Missing artifact error:
+  - Ensure build outputs land in `dist/` (schemas/presets/bin). Update build configs if needed.
+- `npm pack --dry-run` fails:
+  - Inspect the error, then re-run the release after fixing.
 
 ## GitHub Releases
 The release script does not automatically create GitHub Releases. After publishing:
@@ -69,4 +94,3 @@ The current script doesn't support dist-tags. To publish a prerelease:
 - Working tree not clean: commit or stash changes before running release script
 - Tag push rejected: pull/rebase or fast-forward `main`, then rerun
 - Package build failures: ensure `pnpm build` succeeds before running release script
-

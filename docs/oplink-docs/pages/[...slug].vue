@@ -1,60 +1,55 @@
 <script setup lang="ts">
-import type { ContentNavigationItem } from "@nuxt/content";
-import { findPageHeadline } from "#ui-pro/utils/content";
+import type { ContentNavigationItem } from '@nuxt/content'
+import { findPageHeadline } from '@nuxt/content/utils'
 
 definePageMeta({
-	layout: "docs",
-});
+  layout: 'docs'
+})
 
-const route = useRoute();
-const { toc, seo } = useAppConfig();
-const navigation = inject<Ref<ContentNavigationItem[]>>("navigation");
+const route = useRoute()
+const { toc } = useAppConfig()
+const navigation = inject<Ref<ContentNavigationItem[]>>('navigation')
 
-const { data: page } = await useAsyncData(route.path, () =>
-	queryCollection("docs").path(route.path).first(),
-);
+const { data: page } = await useAsyncData(route.path, () => queryCollection('docs').path(route.path).first())
 if (!page.value) {
-	throw createError({
-		statusCode: 404,
-		statusMessage: "Page not found",
-		fatal: true,
-	});
+  throw createError({ statusCode: 404, statusMessage: 'Page not found', fatal: true })
 }
 
 const { data: surround } = await useAsyncData(`${route.path}-surround`, () => {
-	return queryCollectionItemSurroundings("docs", route.path, {
-		fields: ["description"],
-	});
-});
+  return queryCollectionItemSurroundings('docs', route.path, {
+    fields: ['description']
+  })
+})
+
+const title = page.value.seo?.title || page.value.title
+const description = page.value.seo?.description || page.value.description
 
 useSeoMeta({
-	title: page.value.seo.title,
-	ogTitle: `${page.value.seo.title} - ${seo?.siteName}`,
-	description: page.value.seo.description,
-	ogDescription: page.value.seo.description,
-});
+  title,
+  ogTitle: title,
+  description,
+  ogDescription: description
+})
 
-const headline = computed(() => findPageHeadline(navigation.value, page.value));
+const headline = computed(() => findPageHeadline(navigation?.value, page.value?.path))
 
-defineOgImageComponent("Docs", {
-	title: page.value.title,
-	description: page.value.description,
-	headline: headline.value,
-});
+defineOgImageComponent('Docs', {
+  headline: headline.value
+})
 
 const links = computed(() => {
-	const links = [];
-	if (toc?.bottom?.edit) {
-		links.push({
-			icon: "i-lucide-external-link",
-			label: "Edit this page",
-			to: `${toc.bottom.edit}/${page?.value?.stem}.${page?.value?.extension}`,
-			target: "_blank",
-		});
-	}
+  const links = []
+  if (toc?.bottom?.edit) {
+    links.push({
+      icon: 'i-lucide-external-link',
+      label: 'Edit this page',
+      to: `${toc.bottom.edit}/${page?.value?.stem}.${page?.value?.extension}`,
+      target: '_blank'
+    })
+  }
 
-	return [...links, ...(toc?.bottom?.links || [])].filter(Boolean);
-});
+  return [...links, ...(toc?.bottom?.links || [])].filter(Boolean)
+})
 </script>
 
 <template>
@@ -62,9 +57,18 @@ const links = computed(() => {
     <UPageHeader
       :title="page.title"
       :description="page.description"
-      :links="page.links"
       :headline="headline"
-    />
+    >
+      <template #links>
+        <UButton
+          v-for="(link, index) in page.links"
+          :key="index"
+          v-bind="link"
+        />
+
+        <PageHeaderLinks />
+      </template>
+    </UPageHeader>
 
     <UPageBody>
       <ContentRenderer
