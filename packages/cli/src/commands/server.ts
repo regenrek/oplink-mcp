@@ -71,8 +71,8 @@ export default defineCommand({
 			if (ctx.args.logLevel) {
 				process.env.OPLINK_LOG_LEVEL = String(ctx.args.logLevel);
 			}
-			const core = await loadCore();
-			const finalConfig = core.loadAndMergeConfig(configPath);
+				const core = await loadCore();
+				const finalConfig = core.loadAndMergeConfig(configPath);
 
 			// During server creation we may talk to external MCP servers via mcporter.
 			// Some libraries may still write to STDOUT; temporarily mirror STDOUT to STDERR
@@ -82,19 +82,19 @@ export default defineCommand({
 				return (process.stderr as any).write(chunk, encoding, cb);
 			};
 
-			let server: Awaited<ReturnType<typeof core.createMcpServer>> | null = null;
-			try {
-				server = await core.createMcpServer(finalConfig, version, {
-					configDir: configPath,
-				});
-			} finally {
-				(process.stdout as any).write = originalWrite;
-			}
+				let server: Awaited<ReturnType<typeof core.createMcpServer>> | null = null;
+				try {
+					server = await core.createMcpServer(finalConfig, version, {
+						configDir: configPath,
+					});
+				} finally {
+					(process.stdout as any).write = originalWrite;
+				}
 
 			if (!server) {
 				throw new Error("MCP server failed to initialize");
 			}
-			await core.startServer(server, configPath);
+				await core.startServer(server, configPath);
 		} catch (error) {
 			console.error("Failed to start MCP server:", error);
 			process.exit(1);

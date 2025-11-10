@@ -1,4 +1,8 @@
 import type { InputPluginOption } from "rollup";
+import alias from "@rollup/plugin-alias";
+import { existsSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { dirname, join, resolve } from "pathe";
 import { visualizer } from "rollup-plugin-visualizer";
 import { defineBuildConfig } from "unbuild";
 
@@ -26,12 +30,29 @@ export default defineBuildConfig({
 		},
 	],
 	hooks: {
-		"rollup:options"(ctx, options) {
+	"rollup:options"(ctx, options) {
 			// bundle yaml files
 			if (!options.plugins) {
 				options.plugins = [];
 			}
 			const plugins = options.plugins as InputPluginOption[];
+
+			// Prefer local workspace core build when available to avoid dynamic imports
+			try {
+				const here = dirname(fileURLToPath(import.meta.url));
+				const coreDist = resolve(here, "../../oplink/dist/index.mjs");
+				const coreSrc = resolve(here, "../../oplink/src/index.ts");
+				const replacement = existsSync(coreDist)
+					? coreDist
+					: existsSync(coreSrc)
+						? coreSrc
+						: undefined;
+				if (replacement) {
+					plugins.unshift(
+						alias({ entries: [{ find: "@oplink/core", replacement }] }),
+					);
+				}
+			} catch {}
 
 			if (isAnalysingSize) {
 				plugins.unshift(visualizer({ template: "raw-data" }));
