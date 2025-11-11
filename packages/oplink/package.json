@@ -22,13 +22,11 @@
   "license": "MIT",
   "main": "./dist/index.mjs",
   "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
   "files": [
     "dist"
   ],
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs"
     }
   },
@@ -36,7 +34,7 @@
     "dev": "tsx src/server.ts",
     "dev:verbose": "NODE_ENV=development tsx src/server.ts",
     "inspect": "tsc && npx @modelcontextprotocol/inspector node -- dist/cli-entry.mjs",
-    "build": "rolldown -c && tsc -p tsconfig.json --emitDeclarationOnly --declaration --outDir dist",
+    "build": "rolldown -c",
     "prepublishOnly": "pnpm run build",
     "update": "npm version patch && npm publish",
     "test": "vitest",
