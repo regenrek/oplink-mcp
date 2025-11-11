@@ -1083,17 +1083,16 @@ function registerDescribeToolsUtility(
                 includeSchemas?: boolean;
                 limit?: number;
             };
-            if (!parsed.workflow && !(parsed.workflows && parsed.workflows.length > 0)) {
-                throw new Error("Specify 'workflow' or 'workflows' to scope describe_tools");
-            }
             const workflowNames = new Set<string>();
             if (parsed.workflow) {
                 workflowNames.add(parsed.workflow);
             }
-            if (parsed.workflows) {
-                for (const name of parsed.workflows) {
-                    workflowNames.add(name);
-                }
+            if (parsed.workflows && parsed.workflows.length > 0) {
+                for (const name of parsed.workflows) workflowNames.add(name);
+            }
+            // Default: show all known workflows when none provided.
+            if (workflowNames.size === 0) {
+                for (const key of workflows.keys()) workflowNames.add(key);
             }
 			const aliasFilter = new Set(
 				(parsed.aliases ?? []).map((alias: string) => alias.trim()).filter(Boolean),
