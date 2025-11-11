@@ -12,16 +12,20 @@ universal_helper:
     - deepwiki
 
 screenshot_and_lookup:
-  description: "Scripted example: take a screenshot of a page and look up related info in DeepWiki"
+  description: "Scripted example: take a screenshot of a page and ask DeepWiki about a repository"
   runtime: scripted
   parameters:
     url:
       type: "string"
       description: "Page URL to capture (http/https)"
       required: true
-    query:
+    repo:
       type: "string"
-      description: "DeepWiki search query"
+      description: "GitHub repository in owner/repo format (e.g. facebook/react)"
+      required: true
+    question:
+      type: "string"
+      description: "Question to ask DeepWiki about the repository"
       required: true
     format:
       type: "string"
@@ -37,7 +41,7 @@ screenshot_and_lookup:
       args:
         format: "{{ format }}"
         fullPage: true
-    - call: deepwiki:deepwiki_search
+    - call: deepwiki:ask_question
       args:
-        query: "{{ query }}"
-
+        repoName: "{{ repo }}"
+        question: "{{ question }}"

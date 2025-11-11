@@ -157,17 +157,15 @@ async ensureAlias(alias: string, options?: EnsureOptions): Promise<void> {
 			entry = await this.refreshAlias(alias);
 			tool = entry.tools.get(normalizedTool);
 		}
-		if (!tool) {
-			const inspectHint = `npx mcporter list ${alias} --config ${this.configDir}`;
-			const suggestions = this.suggestToolsFromEntry(entry, normalizedTool, 3);
-			const hint =
-				suggestions.length > 0
-					? ` Did you mean: ${suggestions.join(", ")}?`
-					: "";
-			throw new ExternalServerError(
-				`Server '${alias}' does not expose tool '${normalizedTool}'. Run '${inspectHint}' to inspect available tools.${hint}`,
-			);
-		}
+        if (!tool) {
+            const suggestions = this.suggestToolsFromEntry(entry, normalizedTool, 3);
+            const hint = suggestions.length > 0 ? ` Did you mean: ${suggestions.join(", ")}?` : "";
+            const guidance =
+              "Use the 'describe_tools' helper to see cached tools, or inspect the server directly with mcporter: 'npx mcporter list <server-url> --schema'";
+            throw new ExternalServerError(
+                `Server '${alias}' does not expose tool '${normalizedTool}'. ${guidance}.${hint}`,
+            );
+        }
 		return tool;
 	}
 
