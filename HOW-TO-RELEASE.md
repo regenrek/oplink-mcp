@@ -45,6 +45,40 @@ This is a monorepo with multiple packages:
   - Publishes `@oplink/core` and `oplink` to npm with `--access public`
   - Skips `@oplink/test-utils` (not configured for publishing)
 
+### Preflight Only (no version bump)
+- Run just the checks without publishing:
+  - `pnpm dlx tsx scripts/release.ts preflight`
+  - Exits non‑zero on failure; prints the exact blocking step.
+
+## Full Release Checklist
+
+Before you start
+- `git status` is clean on `main` and pushed.
+- `npm whoami` succeeds; 2FA ready if enabled.
+- Node 18+ or 20+; pnpm installed.
+
+Run preflight (required)
+- `pnpm dlx tsx scripts/release.ts preflight`
+  - Blocks on:
+    - runtime deps using `workspace:`/`catalog:` specifiers
+    - missing CLI/core artifacts (schemas/presets/bin)
+    - failing `npm pack --dry-run`
+
+Publish
+- Choose bump: `patch` | `minor` | `major` | `<X.Y.Z>`
+  - `pnpm dlx tsx scripts/release.ts patch`
+
+Post‑publish verification
+- `npm view oplink version` and `npm view @oplink/core version`
+- Quick smoke:
+  - `npx -y oplink@latest --help`
+  - `npx -y oplink@latest validate --config examples/deepwiki-demo/.mcp-workflows`
+- Push tag created by script is visible: `git tag -l v*`
+
+Deprecate broken versions (if needed)
+- `npm deprecate oplink@<bad> "Deprecated. Please use oplink@<good> or later."`
+- `npm deprecate @oplink/core@<bad> "Deprecated. Please use @oplink/core@<good> or later."`
+
 ## Sanity Checks (optional but recommended)
 - Build locally before releasing:
   - `pnpm build` (builds all packages)

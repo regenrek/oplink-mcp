@@ -226,8 +226,23 @@ function runPreflightChecks() {
     }
 }
 
-// Get version bump type from command line arguments
+// Get command line arguments
 const args = process.argv.slice(2);
-const versionBumpArg = args[0] || "patch"; // Default to patch
+const subcmd = args[0] || "patch"; // Default to patch bump
 
-publishPackages(versionBumpArg).catch(console.error);
+if (subcmd === "preflight") {
+    try {
+        ensureCleanWorkingTree();
+        runPreflightChecks();
+        console.log("Preflight checks passed ✅");
+        process.exit(0);
+    } catch (err) {
+        console.error("Preflight failed:", err);
+        process.exit(1);
+    }
+} else {
+    publishPackages(subcmd as any).catch((err) => {
+        console.error(err);
+        process.exit(1);
+    });
+}

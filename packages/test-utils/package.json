@@ -6,18 +6,16 @@
   "type": "module",
   "main": "./dist/index.mjs",
   "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
   "files": [
     "dist"
   ],
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs"
     }
   },
   "scripts": {
-    "build": "pnpm -w exec rolldown -c && tsc -p tsconfig.json --emitDeclarationOnly --declaration --outDir dist",
+    "build": "pnpm exec rolldown -c",
     "prepublishOnly": "pnpm run build",
     "test": "pnpm run build && vitest",
     "test:1": "pnpm run build &&vitest run 'CL1'"

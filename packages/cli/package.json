@@ -32,7 +32,7 @@
     "bin"
   ],
   "scripts": {
-    "build": "pnpm -w exec rolldown -c && node scripts/copy-schemas.mjs",
+    "build": "pnpm exec rolldown -c && node scripts/copy-schemas.mjs",
     "dev": "rolldown -c --watch",
     "prepublishOnly": "npm run build",
     "release": "npm publish",
