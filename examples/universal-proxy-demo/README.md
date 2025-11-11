@@ -53,8 +53,8 @@ universal_helper({
 ```json
 universal_helper({
   "server": "deepwiki",
-  "tool": "deepwiki_search",
-  "args": { "query": "Model Context Protocol" }
+  "tool": "ask_question",
+  "args": { "repoName": "facebook/react", "question": "What is the new JSX transform?" }
 })
 ```
 
@@ -63,11 +63,11 @@ universal_helper({
 ```json
 screenshot_and_lookup({
   "url": "https://example.com",
-  "query": "example domain"
+  "repo": "facebook/react",
+  "question": "How does Suspense scheduling work?"
 })
 ```
 
 ## How it works
 
 Declare servers in `.mcp-workflows/servers.json`. Oplink hands off launch/transport, discovery, and schema validation to mcporter. When you invoke a tool, Oplink forwards it to mcporter, which connects (stdio or HTTP) and executes the tool. No duplication of tool schemas in your repo is required.
-

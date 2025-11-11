@@ -1,25 +1,28 @@
 deepwiki_lookup:
-  description: "Look up details in DeepWiki"
+  description: "Ask DeepWiki a question about a GitHub repository"
   runtime: scripted
   parameters:
-    query:
+    repo:
       type: "string"
-      description: "Search phrase or entity"
+      description: "owner/repo, e.g. facebook/react"
+      required: true
+    question:
+      type: "string"
+      description: "Question to ask about the repository"
       required: true
   steps:
-    - call: deepwiki:deepwiki_search
+    - call: deepwiki:ask_question
       args:
-        query: "{{ query }}"
+        repoName: "{{ repo }}"
+        question: "{{ question }}"
 
 deepwiki_auto:
-  description: "Auto-discovered DeepWiki tools"
-  runtime: scripted
-  parameters:
-    query:
-      type: "string"
-      description: "Topic to research"
-      required: true
-  steps:
-    - call: deepwiki:deepwiki_search
-      args:
-        query: "{{ query }}"
+  description: "Auto-discover and proxy DeepWiki tools"
+  prompt: |
+    You expose all tools discovered from the DeepWiki MCP server.
+    Accept a JSON object with fields:
+      - tool: the tool name to run (e.g., deepwiki:ask_question)
+      - args (optional): arguments for the tool call
+    Use describe_tools({ "workflow": "deepwiki_auto" }) to discover available tools.
+  externalServers:
+    - deepwiki
