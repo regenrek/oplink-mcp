@@ -1,6 +1,6 @@
 {
   "name": "@oplink/core",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "MCP workflow orchestration and registry tool (provider-agnostic)",
   "type": "module",
   "keywords": [
