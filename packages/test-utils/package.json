@@ -17,7 +17,7 @@
     }
   },
   "scripts": {
-    "build": "pnpm exec rolldown -c && tsc -p tsconfig.json --emitDeclarationOnly --declaration --outDir dist",
+    "build": "pnpm -w exec rolldown -c && tsc -p tsconfig.json --emitDeclarationOnly --declaration --outDir dist",
     "prepublishOnly": "pnpm run build",
     "test": "pnpm run build && vitest",
     "test:1": "pnpm run build &&vitest run 'CL1'"
@@ -27,7 +27,7 @@
   },
   "devDependencies": {
     "@types/node": "catalog:types",
-    "rolldown": "1.0.0-beta.47",
+    "rolldown": "1.0.0-beta.49",
     "typescript": "catalog:cli"
   }
 }

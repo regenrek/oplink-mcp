@@ -71,7 +71,7 @@
 		"prompts": "catalog:cli",
 		"release-it": "^17.11.0",
 		"rimraf": "catalog:utils",
-		"rolldown": "1.0.0-beta.47",
+        "rolldown": "1.0.0-beta.49",
 		"semver": "catalog:utils",
 		"simple-git-hooks": "catalog:cli",
 		"tinyexec": "catalog:utils",

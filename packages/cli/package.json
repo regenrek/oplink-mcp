@@ -32,7 +32,7 @@
     "bin"
   ],
   "scripts": {
-    "build": "pnpm exec rolldown -c && node scripts/copy-schemas.mjs",
+    "build": "pnpm -w exec rolldown -c && node scripts/copy-schemas.mjs",
     "dev": "rolldown -c --watch",
     "prepublishOnly": "npm run build",
     "release": "npm publish",
@@ -54,7 +54,7 @@
     "magicast": "catalog:utils",
     "mri": "catalog:cli",
     "pathe": "catalog:prod",
-    "rolldown": "1.0.0-beta.47",
+    "rolldown": "1.0.0-beta.49",
     "typescript": "catalog:cli",
     "vitest": "catalog:testing"
   },

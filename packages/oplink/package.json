@@ -34,7 +34,7 @@
     "dev": "tsx src/server.ts",
     "dev:verbose": "NODE_ENV=development tsx src/server.ts",
     "inspect": "tsc && npx @modelcontextprotocol/inspector node -- dist/cli-entry.mjs",
-    "build": "pnpm exec rolldown -c",
+    "build": "pnpm -w exec rolldown -c",
     "prepublishOnly": "pnpm run build",
     "update": "npm version patch && npm publish",
     "test": "vitest",
@@ -62,7 +62,7 @@
     "ts-node": "^10.9.2",
     "tsx": "catalog:cli",
     "typescript": "catalog:cli",
-    "rolldown": "1.0.0-beta.47",
+    "rolldown": "1.0.0-beta.49",
     "vitest": "catalog:testing"
   },
   "packageManager": "pnpm@10.6.3"
