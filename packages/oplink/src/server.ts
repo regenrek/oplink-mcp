@@ -10,6 +10,7 @@ import {
     mergeConfigs,
     validateToolConfig,
 } from "./config";
+import { normalizeExternalSchema } from "./schema/convert";
 import { promptFunctions } from "./prompts";
 import {
 	appendFormattedTools,
@@ -401,12 +402,8 @@ async function registerLocalTool(
 
     // Prefer JSON-schema annotations to avoid client Zod surface; keep
     // Zod parser internal only (inputParser).
-    const jsonAnnotation = convertParametersToJsonSchema(toolConfig.parameters);
-    if (jsonAnnotation) {
-        server.tool(toolName, description, jsonAnnotation as any, registerCallback);
-    } else {
-        server.tool(toolName, description, registerCallback);
-    }
+    if (inputSchema) server.tool(toolName, description, inputSchema, registerCallback);
+    else server.tool(toolName, description, registerCallback);
 
 	registeredNames.add(toolName);
 }
@@ -461,12 +458,8 @@ async function registerScriptedWorkflow(
 		}
 	};
 
-    const jsonAnnotation = convertParametersToJsonSchema(toolConfig.parameters);
-    if (jsonAnnotation) {
-        server.tool(toolName, description, jsonAnnotation as any, handler);
-    } else {
-        server.tool(toolName, description, handler);
-    }
+    if (inputShape) server.tool(toolName, description, inputShape, handler);
+    else server.tool(toolName, description, handler);
 
 	registeredNames.add(toolName);
 }
@@ -499,14 +492,16 @@ function registerExternalServerWorkflow(
 	const describeHint = buildDescribeHint(toolName, normalizedAliases, describeCall);
 	const promptWithHint = ensureDescribeHint(promptText, describeHint);
     const annotations: Record<string, any> = {
+        $schema: "https://json-schema.org/draft/2020-12/schema",
         type: "object",
         properties: {
             tool: { type: "string", description: `External tool to invoke (run ${describeCall} first)` },
             args: { type: "object", description: "Arguments object forwarded to the external tool" },
         },
+        additionalProperties: false,
     };
     if (normalizedAliases.length > 1) {
-        annotations.properties.server = { type: "string", enum: normalizedAliases, description: "Server alias to use (omit if prefixing tool)" };
+        (annotations.properties as any).server = { type: "string", enum: normalizedAliases, description: "Server alias to use (omit if prefixing tool)" };
     }
 
     const handler = async (params?: Record<string, any>) => {

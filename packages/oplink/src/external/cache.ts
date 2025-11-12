@@ -2,6 +2,7 @@ import crypto from "node:crypto";
 import { z } from "zod";
 import uFuzzy from "@leeoniya/ufuzzy";
 import type { ServerToolInfo } from "mcporter";
+import { normalizeExternalSchema } from "../schema/convert";
 import { ExternalServerError, listExternalServerTools } from "../external-tools";
 
 const ToolSnapshotSchema = z
@@ -235,7 +236,12 @@ private async refreshAlias(alias: string): Promise<CacheEntry> {
 				alias: normalized,
 				versionHash: hashTools(tools),
 				refreshedAt: now,
-				tools: map,
+				tools: new Map(
+					Array.from(map.entries()).map(([name, info]) => [
+						name,
+						{ ...info, inputSchema: info.inputSchema ? normalizeExternalSchema(info.inputSchema as any) : undefined },
+					]),
+				),
 				names,
 				namesNorm,
 				fieldsNorm,

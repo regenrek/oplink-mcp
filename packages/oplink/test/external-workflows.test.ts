@@ -84,11 +84,12 @@ describe("external server workflows", () => {
 	expect(describeTool).toBeDefined();
 	const workflow = registrations.find((r) => r.name === "frontend_debugger");
 	expect(workflow).toBeDefined();
-	const workflowTool = workflow!;
-	expect(workflowTool.schema).toBeDefined();
-	const schema = z.object(workflowTool.schema!);
-	const parsed = schema.parse({ tool: "take_screenshot", args: { format: "png" } });
-	expect(parsed.tool).toBe("take_screenshot");
+    const workflowTool = workflow!;
+    expect(workflowTool.schema).toBeDefined();
+    // schema is JSON Schema when registered by the server; verify core shape
+    const json = workflowTool.schema as any;
+    expect(json.type).toBe("object");
+    expect(json.properties).toBeTypeOf("object");
 
 	const promptResponse = await workflowTool.handler();
 	expect(promptResponse.content[0].text).toContain("Provide");
