@@ -271,13 +271,15 @@ export async function registerToolsFromConfig(
 		options.configDir,
 	);
 
-	registerAuthBootstrapTool(
-		server,
-		registeredNames,
-		discoveryCache,
-		aliasMeta,
-		options.configDir,
-	);
+    registerAuthBootstrapTool(
+        server,
+        registeredNames,
+        discoveryCache,
+        aliasMeta,
+        options.configDir,
+    );
+
+    registerOplinkInfoTool(server, registeredNames);
 }
 
 /**
@@ -511,7 +513,17 @@ function registerExternalServerWorkflow(
             const normalized = params ?? {};
             let requestedTool = normalized.tool;
 			if (!requestedTool || typeof requestedTool !== "string") {
-				return { content: [{ type: "text", text: promptWithHint }] };
+                const example =
+                  normalizedAliases.length === 1
+                    ? `${toolName}({ "tool": "${normalizedAliases[0]}:ask_question", "args": { "repoName": "owner/repo", "question": "..." } })`
+                    : `${toolName}({ "server": "${normalizedAliases[0]}", "tool": "ask_question", "args": { "repoName": "owner/repo", "question": "..." } })`;
+                const msg = [
+                  `Missing required field 'tool'.`,
+                  `Call this workflow with a JSON object specifying the external tool and arguments.`,
+                  `Example: ${example}`,
+                  `Use ${describeCall} to discover available tools.`,
+                ].join("\n\n");
+                return { content: [{ type: "text", text: msg }], isError: true };
 			}
 			let alias: string | undefined = normalized.server;
 			if (requestedTool.includes(":")) {
@@ -573,6 +585,13 @@ function registerExternalServerWorkflow(
             return buildToolError(wrapped);
         }
     };
+
+    // Provide concrete examples to help planners/users construct payloads
+    (annotations as any).examples = [
+      normalizedAliases.length === 1
+        ? { tool: `${normalizedAliases[0]}:ask_question`, args: { repoName: "owner/repo", question: "..." } }
+        : { server: normalizedAliases[0], tool: "ask_question", args: { repoName: "owner/repo", question: "..." } },
+    ];
 
     server.tool(toolName, description, annotations as any, handler);
 	registeredNames.add(toolName);
@@ -1146,7 +1165,11 @@ function registerDescribeToolsUtility(
 						continue;
 					}
 					const view = cache.getAliasView(alias);
-					const tools = view?.tools ?? [];
+            // tools originate from the cache; normalize schemas again defensively
+            const tools = (view?.tools ?? []).map((t) => ({
+              ...t,
+              inputSchema: t.inputSchema ? normalizeExternalSchema(t.inputSchema as any) : t.inputSchema,
+            }));
 					let filtered = tools;
 					if (searchTerm) {
 						filtered = tools.filter((tool) => {
@@ -1174,13 +1197,13 @@ function registerDescribeToolsUtility(
 							}
 							: undefined,
 						truncated: limit > 0 && filtered.length > limited.length,
-						tools: limited.map((tool) => ({
-							name: tool.name,
-							description: tool.description ?? "",
-							recommended:
-								meta.autoAliases.has(alias) || recommended.has(tool.name),
-							inputSchema: includeSchemas ? tool.inputSchema ?? null : undefined,
-						})),
+                        tools: limited.map((tool) => ({
+                            name: tool.name,
+                            description: tool.description ?? "",
+                            recommended:
+                                meta.autoAliases.has(alias) || recommended.has(tool.name),
+                            inputSchema: includeSchemas ? (tool.inputSchema ? normalizeExternalSchema(tool.inputSchema as any) : null) : undefined,
+                        })),
 					});
 				}
 				responses.push({
@@ -1340,4 +1363,26 @@ function registerAuthBootstrapTool(
         handler,
     );
 	registeredNames.add(toolName);
+}
+
+function registerOplinkInfoTool(
+  server: McpServer,
+  registeredNames: Set<string>,
+): void {
+  const toolName = "oplink_info";
+  if (registeredNames.has(toolName)) return;
+  const handler = async () => {
+    try {
+      const pkg = getPackageInfo();
+      const payload = {
+        name: pkg.name ?? "oplink",
+        version: pkg.version ?? "unknown",
+      };
+      return { content: [{ type: "text", text: JSON.stringify(payload) }] };
+    } catch (e) {
+      return { content: [{ type: "text", text: String(e) }], isError: true };
+    }
+  };
+  server.tool(toolName, "Show Oplink package name and version", handler);
+  registeredNames.add(toolName);
 }

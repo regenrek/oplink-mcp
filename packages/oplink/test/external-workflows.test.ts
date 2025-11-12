@@ -91,9 +91,9 @@ describe("external server workflows", () => {
     expect(json.type).toBe("object");
     expect(json.properties).toBeTypeOf("object");
 
-	const promptResponse = await workflowTool.handler();
-	expect(promptResponse.content[0].text).toContain("Provide");
-	expect(promptResponse.content[0].text).toContain("describe_tools");
+    const promptResponse = await workflowTool.handler();
+    expect(promptResponse.content[0].text).toContain("Missing required field 'tool'");
+    expect(promptResponse.content[0].text).toContain("describe_tools");
 
 	executeExternalToolMock.mockResolvedValue({ content: [] });
 	await workflowTool.handler({ tool: "take_screenshot", args: { format: "png" } });
