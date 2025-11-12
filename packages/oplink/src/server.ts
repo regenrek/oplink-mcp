@@ -1217,10 +1217,11 @@ function registerDescribeToolsUtility(
 		}
 	};
 
+    // Register without a formal parameter schema to maximize client compatibility.
+    // We still validate and interpret inputs manually inside the handler.
     server.tool(
         toolName,
         "Describe cached MCP tool metadata for a workflow",
-        annotations,
         handler,
     );
 	registeredNames.add(toolName);
@@ -1344,11 +1345,6 @@ function registerAuthBootstrapTool(
     server.tool(
         toolName,
         "Warm up OAuth tokens and cached metadata for external MCP servers.",
-        // Use plain JSON-like annotations to avoid client-side Zod record handling
-        {
-            aliases: { type: "array", items: { type: "string" }, description: "Subset of aliases to initialize" },
-            refresh: { type: "boolean", description: "Force discovery even if cache is warm" },
-        } as Record<string, any>,
         handler,
     );
 	registeredNames.add(toolName);
