@@ -34,6 +34,11 @@ interface RegisterOptions {
     // unknown external tools) is skipped with a warning instead of throwing.
     // Defaults to false; the CLI may enable this via env for demos.
     skipScriptedErrors?: boolean;
+    // When true, register proxy tools for every discovered external MCP tool.
+    // Defaults to false so workflows remain the primary surface.
+    autoRegisterExternalTools?: boolean;
+    // When true, register the internal `oplink_info` helper tool.
+    includeInfoTool?: boolean;
 }
 
 type WorkflowRuntimeKind = "prompt" | "scripted" | "external";
@@ -218,17 +223,19 @@ export async function registerToolsFromConfig(
 			);
 		}
 
-		// Register proxy tools for each discovered alias so clients can call
-		// external tools directly without using the generic router.
-		for (const alias of aliasMeta.keys()) {
-			await registerExternalAliasProxies(
-				server,
-				String(alias),
-				discoveryCache,
-				options.configDir!,
-				registeredNames,
-			);
-		}
+        if (options.autoRegisterExternalTools) {
+            // Register proxy tools for each discovered alias so clients can call
+            // external tools directly without using the generic router.
+            for (const alias of aliasMeta.keys()) {
+                await registerExternalAliasProxies(
+                    server,
+                    String(alias),
+                    discoveryCache,
+                    options.configDir!,
+                    registeredNames,
+                );
+            }
+        }
 	} else if (options.configDir) {
 		discoveryCache = new ExternalToolCache(
 			options.configDir,
@@ -292,7 +299,9 @@ export async function registerToolsFromConfig(
         options.configDir,
     );
 
-    registerOplinkInfoTool(server, registeredNames);
+    if (options.includeInfoTool) {
+        registerOplinkInfoTool(server, registeredNames);
+    }
 }
 
 /**
@@ -415,9 +424,8 @@ async function registerLocalTool(
 		}
 	};
 
-    // Prefer JSON-schema annotations to avoid client Zod surface; keep
-    // Zod parser internal only (inputParser).
-    // For prompt workflows, expose Zod on wire to preserve argument passing in current clients.
+    // Use Zod shape for SDK registration (SDK converts to JSON Schema for tools/list).
+    // Keep Zod internal for runtime parsing in handler.
     if (inputSchema) server.tool(toolName, description, inputSchema, registerCallback);
     else server.tool(toolName, description, registerCallback);
 
@@ -474,8 +482,7 @@ async function registerScriptedWorkflow(
 		}
 	};
 
-    const jsonSchema = convertParametersToJsonSchema(toolConfig.parameters);
-    if (jsonSchema) server.tool(toolName, description, jsonSchema as any, handler);
+    if (inputShape) server.tool(toolName, description, inputShape, handler);
     else server.tool(toolName, description, handler);
 
 	registeredNames.add(toolName);
@@ -508,17 +515,13 @@ function registerExternalServerWorkflow(
 	const describeCall = buildDescribeCallSnippet(toolName, normalizedAliases);
 	const describeHint = buildDescribeHint(toolName, normalizedAliases, describeCall);
 	const promptWithHint = ensureDescribeHint(promptText, describeHint);
-    const annotations: Record<string, any> = {
-        $schema: "https://json-schema.org/draft/2020-12/schema",
-        type: "object",
-        properties: {
-            tool: { type: "string", description: `External tool to invoke (run ${describeCall} first)` },
-            args: { type: "object", description: "Arguments object forwarded to the external tool" },
-        },
-        additionalProperties: false,
+    // Zod shape for the router tool. SDK will expose JSON Schema derived from this.
+    const routerShape: Record<string, z.ZodTypeAny> = {
+        tool: z.string().describe(`External tool to invoke (run ${describeCall} first)`),
+        args: z.object({}).passthrough().optional().describe("Arguments object forwarded to the external tool"),
     };
     if (normalizedAliases.length > 1) {
-        (annotations.properties as any).server = { type: "string", enum: normalizedAliases, description: "Server alias to use (omit if prefixing tool)" };
+        routerShape.server = z.enum(normalizedAliases as [string, ...string[]]).describe("Server alias to use (omit if prefixing tool)");
     }
 
     const handler = async (params?: Record<string, any>) => {
@@ -602,13 +605,14 @@ function registerExternalServerWorkflow(
     };
 
     // Provide concrete examples to help planners/users construct payloads
-    (annotations as any).examples = [
+    const examples = [
       normalizedAliases.length === 1
         ? { tool: `${normalizedAliases[0]}:ask_question`, args: { repoName: "owner/repo", question: "..." } }
         : { server: normalizedAliases[0], tool: "ask_question", args: { repoName: "owner/repo", question: "..." } },
     ];
-
-    server.tool(toolName, description, annotations as any, handler);
+    // Attach examples via describe hint text (SDK doesn't accept arbitrary annotations in the schema object)
+    const descWithExample = `${promptWithHint}\n\nExample: ${JSON.stringify(examples[0])}`;
+    server.tool(toolName, descWithExample, routerShape, handler);
 	registeredNames.add(toolName);
 }
 
@@ -635,8 +639,8 @@ async function registerExternalAliasProxies(
                 return buildToolError(error);
             }
         };
-        const wireSchema = info.inputSchema ? normalizeExternalSchema(info.inputSchema as any) : undefined;
-        if (wireSchema) server.tool(proxyName, description, wireSchema as any, handler);
+        const emitSchemas = !/^(0|false|off)$/i.test(String(process.env.OPLINK_PROXY_SCHEMAS || 'on'));
+        if (emitSchemas && shape) server.tool(proxyName, description, shape, handler);
         else server.tool(proxyName, description, handler);
         registeredNames.add(proxyName);
     }

@@ -85,11 +85,12 @@ describe("external server workflows", () => {
 	const workflow = registrations.find((r) => r.name === "frontend_debugger");
 	expect(workflow).toBeDefined();
     const workflowTool = workflow!;
+    // The MCP SDK stores a Zod object internally; we only see the raw
+    // Zod shape at this boundary, not the JSON Schema on the wire.
     expect(workflowTool.schema).toBeDefined();
-    // schema is JSON Schema when registered by the server; verify core shape
-    const json = workflowTool.schema as any;
-    expect(json.type).toBe("object");
-    expect(json.properties).toBeTypeOf("object");
+    const shape = workflowTool.schema as Record<string, z.ZodTypeAny>;
+    // Router must expose at least a 'tool' field and allow 'args'
+    expect(Object.keys(shape)).toEqual(expect.arrayContaining(["tool", "args"]));
 
     const promptResponse = await workflowTool.handler();
     expect(promptResponse.content[0].text).toContain("Missing required field 'tool'");
@@ -272,5 +273,66 @@ describe("external server workflows", () => {
 		const response = await workflow!.handler({ tool: "take_screenshot" });
 		expect(response.content[0].text).toContain('describe_tools({ "workflow": "frontend_debugger"');
 		expect(response.isError).toBeUndefined();
+	});
+
+	it("does not auto-register alias proxies without opt-in", async () => {
+		listToolsMock.mockResolvedValue([
+			{
+				name: "read_wiki_structure",
+				description: "Read structure",
+				inputSchema: {
+					type: "object",
+					properties: { repoName: { type: "string" } },
+					required: ["repoName"],
+				},
+			},
+		]);
+
+		const config = {
+			deepwiki_helper: {
+				description: "Proxy helper",
+				externalServers: ["deepwiki"],
+			},
+		};
+
+		await registerToolsFromConfig(server as any, config, {
+			configDir: "/tmp/config",
+		});
+
+		expect(registrations.some((r) => r.name.startsWith("deepwiki."))).toBe(
+			false,
+		);
+	});
+
+	it("can opt into auto-registering alias proxies", async () => {
+		listToolsMock.mockResolvedValue([
+			{
+				name: "read_wiki_structure",
+				description: "Read structure",
+				inputSchema: {
+					type: "object",
+					properties: { repoName: { type: "string" } },
+					required: ["repoName"],
+				},
+			},
+		]);
+
+		const config = {
+			deepwiki_helper: {
+				description: "Proxy helper",
+				externalServers: ["deepwiki"],
+			},
+		};
+
+		await registerToolsFromConfig(server as any, config, {
+			configDir: "/tmp/config",
+			autoRegisterExternalTools: true,
+		});
+
+		const proxy = registrations.find(
+			(r) => r.name === "deepwiki.read_wiki_structure",
+		);
+		expect(proxy).toBeDefined();
+		expect(proxy?.schema).toBeDefined();
 	});
 });

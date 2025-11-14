@@ -16,7 +16,11 @@
 				"server",
 				"--config",
 				"examples/deepwiki-demo/.mcp-workflows"
-			]
+			],
+			"env": {
+				"OPLINK_LOG_LEVEL": "verbose",
+				"OPLINK_PROXY_SCHEMAS": "off"
+			}
 		},
 		"oplink-context7": {
 			"command": "node",

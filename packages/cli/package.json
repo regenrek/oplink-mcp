@@ -52,7 +52,7 @@
   },
   "packageManager": "pnpm@10.6.3",
   "dependencies": {
-    "@oplink/core": "^0.0.8",
+    "@oplink/core": "workspace:*",
     "@iarna/toml": "^2.2.5",
     "ajv": "^8.17.1",
     "ajv-formats": "^3.0.1",

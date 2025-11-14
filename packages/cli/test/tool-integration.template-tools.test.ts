@@ -37,28 +37,20 @@ describe("Template Parameter Integration Tests", () => {
   }, 15000);
 
   it("should call tools with template parameters", async () => {
-    try {
-      const result = await client.callTool("template_calculator", {
-        expression: "5 * 10",
-        precision: 0,
-      });
-      console.log("Tool call result:", JSON.stringify(result, null, 2));
+    const result = await client.callTool("template_calculator", {
+      expression: "5 * 10",
+      precision: 0,
+    });
+    console.log("Tool call result:", JSON.stringify(result, null, 2));
 
-      expect(result).toHaveProperty("content");
-      expect(Array.isArray(result.content)).toBe(true);
+    expect(result).toHaveProperty("content");
+    expect(Array.isArray(result.content)).toBe(true);
 
-      if (result.content[0]?.type === "text") {
-        const responseText = result.content[0].text;
-        expect(responseText).toContain("5 * 10");
-        expect(responseText).toContain("0 decimal places");
-      }
-    } catch (error: any) {
-      if (error.message?.includes("keyValidator._parse is not a function")) {
-        console.log("Received expected Zod validation error - tool exists but schema validation failed");
-        expect(error.message).toContain("keyValidator._parse is not a function");
-        return;
-      }
-      throw error;
+    if (result.content[0]?.type === "text") {
+      const responseText = result.content[0].text;
+      expect(responseText).toContain("5 * 10");
+      expect(responseText).toContain("0 decimal places");
     }
+    expect(result.isError).toBeUndefined();
   }, 15000);
 }); 

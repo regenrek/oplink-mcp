@@ -190,6 +190,10 @@ frontend_debugger({
 
 `describe_tools` accepts optional filters such as `aliases`, `search`, `limit`, and `refresh`. Set `refresh: true` if you need to force a re-discovery after changing the upstream MCP server. Use auto workflows for quick wiring, then switch to scripted workflows (below) when you need curated flows, defaults, or multi-step orchestration.
 
+#### Optional per-tool proxies
+
+By default, Oplink keeps the MCP surface limited to your workflows plus helper utilities (`describe_tools`, `external_auth_setup`). If you want to expose *every* external MCP tool as its own MCP tool (e.g., `deepwiki.read_wiki_structure`) you can opt in by setting `OPLINK_AUTO_REGISTER_EXTERNAL_TOOLS=1` before starting the server (or by passing `autoRegisterExternalTools: true` when calling `createMcpServer`). This is mainly useful for debugging or when a client cannot call `describe_tools`. Similarly, the `oplink_info` helper is only registered when `OPLINK_INFO_TOOL=1` (or `includeInfoTool: true`) for troubleshooting builds.
+
 ### Scripted Workflow Steps
 
 Modern Oplink workflows run entirely on the server: you declare the external steps to execute, and the MCP client only sees the high-level tool (e.g., `frontend_debugger`). Each step references an external MCP tool using the `alias:tool` format from `servers.json` and can template arguments from workflow parameters.

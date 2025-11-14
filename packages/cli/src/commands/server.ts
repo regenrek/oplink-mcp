@@ -9,6 +9,12 @@ import { consola } from "consola";
 import { logger } from "../utils/logger";
 import { cwdArgs, logLevelArgs } from "./_shared";
 
+function envFlag(name: string, defaultValue = false): boolean {
+	const raw = process.env[name];
+	if (raw === undefined) return defaultValue;
+	return /^(1|true|yes|on)$/i.test(raw.trim());
+}
+
 async function getPackageVersion(): Promise<string> {
 	const __filename = fileURLToPath(import.meta.url);
 	const packageJsonPath = join(dirname(__filename), "..", "..", "package.json");
@@ -76,9 +82,13 @@ export default defineCommand({
 				let server: Awaited<ReturnType<typeof createMcpServer>> | null = null;
                 try {
                     const skip = /^(1|true|yes)$/i.test(String(process.env.OPLINK_SKIP_SCRIPTED_ERRORS || ""));
+                    const autoExternal = envFlag("OPLINK_AUTO_REGISTER_EXTERNAL_TOOLS");
+                    const includeInfo = envFlag("OPLINK_INFO_TOOL");
                     server = await createMcpServer(finalConfig, version, {
                       configDir: configPath,
                       skipScriptedErrors: skip,
+                      autoRegisterExternalTools: autoExternal,
+                      includeInfoTool: includeInfo,
                     });
                 } finally {
                     (process.stdout as any).write = originalWrite;

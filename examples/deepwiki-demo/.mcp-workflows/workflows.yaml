@@ -16,13 +16,7 @@ deepwiki_lookup:
         repoName: "{{ repo }}"
         question: "{{ question }}"
 
-deepwiki_auto:
-  description: "Auto-discover and proxy DeepWiki tools"
-  prompt: |
-    You expose all tools discovered from the DeepWiki MCP server.
-    Accept a JSON object with fields:
-      - tool: the tool name to run (e.g., deepwiki:ask_question)
-      - args (optional): arguments for the tool call
-    Use describe_tools({ "workflow": "deepwiki_auto" }) to discover available tools.
-  externalServers:
-    - deepwiki
+## deepwiki_auto (router) intentionally removed for testing stability.
+## Prefer the typed proxies (deepwiki.ask_question, etc.) or the scripted
+## deepwiki_lookup tool above. Reintroduce this section if you need the
+## advanced router behavior.

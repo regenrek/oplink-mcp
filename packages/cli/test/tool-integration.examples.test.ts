@@ -45,20 +45,13 @@ describe("Parameterized Tool Integration Tests", () => {
   }, 15000);
 
   it("should call the parameterized tool with arguments", async () => {
-    try {
-      const result = await client.callTool("calculator", { expression: "2 + 2", precision: 0 });
-      console.log("Tool call result:", JSON.stringify(result, null, 2));
+    const result = await client.callTool("calculator", { expression: "2 + 2", precision: 0 });
+    console.log("Tool call result:", JSON.stringify(result, null, 2));
 
-      expect(result).toHaveProperty("content");
-      expect(Array.isArray(result.content)).toBe(true);
-      expect(result.content[0]).toHaveProperty("type", "text");
-    } catch (error: any) {
-      if (error.message?.includes("keyValidator._parse is not a function")) {
-        console.log("Received expected Zod validation error - tool exists but schema validation failed");
-        expect(error.message).toContain("keyValidator._parse is not a function");
-        return;
-      }
-      throw error;
-    }
+    expect(result).toHaveProperty("content");
+    expect(Array.isArray(result.content)).toBe(true);
+    expect(result.content[0]).toHaveProperty("type", "text");
+    // integration tests depend on the tool actually succeeding now, not surfacing internal Zod errors
+    expect(result.isError).toBeUndefined();
   }, 15000);
 });
