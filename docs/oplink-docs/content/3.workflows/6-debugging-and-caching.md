@@ -58,4 +58,4 @@ rm -rf .mcp-workflows/.tokens/linear
 See also
 
 - [External Servers & Registry](./4-external-servers)
-- Advanced: [mcporter](/5.advanced/mcporter)
+- Advanced: [mcporter](/advanced/mcporter)
