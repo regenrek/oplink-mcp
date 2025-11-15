@@ -10,7 +10,7 @@ Create your own no-code workflows with MCP apps. Oplink combines multiple MCP se
 🚀 *No-code agent workflows* — create your own agent workflows with just editing yaml files<br />
 🧩 *One endpoint, many servers* — bundle any MCP Server like Chrome DevTools, shadcn, Context7, etc. behind a single MCP server entry.<br />
 🛡️ *Guided prompts & schemas* — every workflow exposes typed parameters, instructions, and curated helper tools.<br />
-💾 *Context-efficient discovery* — mcporter caches tool schemas in-memory, so agents discover tools via `describe_tools` without flooding your MCP client with dozens of external commands. Only your curated workflows appear in the tool list.<br />
+💾 *Context-efficient discovery* — [mcporter](https://github.com/steipete/mcporter) caches tool schemas in-memory, so agents discover tools via `describe_tools` without flooding your MCP client with dozens of external commands. Only your curated workflows appear in the tool list.<br />
 🧠 *Works in any MCP client* — Cursor, Claude Code, Codex, Windsurf, and friends can run complex flows without custom glue code.<br /><br />
 
 Imagine you're debugging a frontend issue and need to:
@@ -267,7 +267,7 @@ The repository includes example configurations under `examples/` showing both pr
 
 ## External Tool Integration
 
-Oplink uses mcporter under the hood to connect to external MCP servers, but it reads the registry from `.mcp-workflows/servers.json` in your chosen `--config` directory.
+Oplink uses [mcporter](https://github.com/steipete/mcporter) under the hood to connect to external MCP servers, but it reads the registry from `.mcp-workflows/servers.json` in your chosen `--config` directory.
 1. Define servers in `.mcp-workflows/servers.json` (see the examples above)
 2. Reference tools as `server:tool` inside scripted workflow steps
 3. Only the workflow tools themselves are exposed to the MCP client; helper tools remain internal
@@ -285,7 +285,7 @@ See also:
 
 ### Connecting to hosted MCP servers (OAuth)
 
-Hosted providers like Linear expose MCP servers over HTTPS/SSE and expect an OAuth flow. mcporter 0.4+ already handles the browser/device dance, so you just need one config entry per server:
+Hosted providers like Linear expose MCP servers over HTTPS/SSE and expect an OAuth flow. mcporter 0.5+ already handles the browser/device dance, so you just need one config entry per server:
 
 ```json
 "linear": {
