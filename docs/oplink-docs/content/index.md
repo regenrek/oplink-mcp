@@ -15,8 +15,12 @@ orientation: horizontal
 
     # .mcp-workflows/workflows.yaml
     frontend_debugger:
-      description: "Chrome DevTools helper"
-      prompt: "Use Chrome DevTools MCP tools via this workflow."
+      description: "Debug frontend issues with Chrome DevTools"
+      prompt: |
+        Use Chrome DevTools MCP tools to inspect the page,
+        capture screenshots, and list console or network logs.
+      externalServers:
+        - chrome-devtools
   filename: Terminal
   ---
   ```bash
@@ -24,8 +28,12 @@ orientation: horizontal
 
   # .mcp-workflows/workflows.yaml
   frontend_debugger:
-    description: "Chrome DevTools helper"
-    prompt: "Use Chrome DevTools MCP tools via this workflow."
+    description: "Debug frontend issues with Chrome DevTools"
+    prompt: |
+      Use Chrome DevTools MCP tools to inspect the page,
+      capture screenshots, and list console or network logs.
+    externalServers:
+      - chrome-devtools
   ``` 
   :::
 
@@ -61,86 +69,170 @@ OPLINK is an MCP server that sits between your IDE and multiple MCP servers. It 
 
 ::u-page-section
 #title
-Workflows on Top of Your MCP Servers
+Example 1 – Frontend Debugger
 
-#links
-  :::u-button
+#description
+Turn Chrome DevTools MCP into a single `take_screenshot` workflow that agents can call to navigate, wait for content, and capture screenshots.
+
+#slots
+  :::prose-pre
   ---
-  color: neutral
-  size: lg
-  target: _blank
-  to: https://github.com/regenrek/oplink
-  trailingIcon: i-lucide-arrow-right
-  variant: subtle
+  code: |
+    # .mcp-workflows/workflows.yaml
+    take_screenshot:
+      description: "Navigate and capture a screenshot"
+      runtime: scripted
+      parameters:
+        url:
+          type: string
+          required: true
+        wait_for:
+          type: string
+        format:
+          type: string
+          enum: [png, jpeg, webp]
+          default: png
+      steps:
+        - call: chrome-devtools:navigate_page
+          args:
+            type: url
+            url: "{{ url }}"
+            ignoreCache: false
+        - call: chrome-devtools:wait_for
+          requires: wait_for
+          args:
+            text: "{{ wait_for }}"
+            timeout: 10000
+        - call: chrome-devtools:take_screenshot
+          args:
+            fullPage: true
+            format: "{{ format }}"
+  filename: .mcp-workflows/workflows.yaml
   ---
-  See the Tool Library
+  ```yaml
+  take_screenshot:
+    description: "Navigate and capture a screenshot"
+    runtime: scripted
+    parameters:
+      url:
+        type: string
+        required: true
+      wait_for:
+        type: string
+      format:
+        type: string
+        enum: [png, jpeg, webp]
+        default: png
+    steps:
+      - call: chrome-devtools:navigate_page
+        args:
+          type: url
+          url: "{{ url }}"
+          ignoreCache: false
+      - call: chrome-devtools:wait_for
+        requires: wait_for
+        args:
+          text: "{{ wait_for }}"
+          timeout: 10000
+      - call: chrome-devtools:take_screenshot
+        args:
+          fullPage: true
+          format: "{{ format }}"
+  ```
   :::
+::
 
-#features
-  :::u-page-feature
+::u-page-section
+#title
+Example 2 – Repository Q&A with DeepWiki
+
+#description
+Ask structured questions about any GitHub repo via DeepWiki, but expose it as a single `deepwiki_lookup` workflow in your IDE.
+
+#slots
+  :::prose-pre
   ---
-  icon: i-lucide-git-branch
+  code: |
+    # .mcp-workflows/workflows.yaml
+    deepwiki_lookup:
+      description: "Ask DeepWiki a question about a GitHub repository"
+      runtime: scripted
+      parameters:
+        repo:
+          type: string
+          description: "owner/repo, e.g. shadcn-ui/ui"
+          required: true
+        question:
+          type: string
+          description: "Question to ask about the repository"
+          required: true
+      steps:
+        - call: deepwiki:ask_question
+          args:
+            repoName: "{{ repo }}"
+            question: "{{ question }}"
+  filename: .mcp-workflows/workflows.yaml
   ---
-  #title
-  Connect Your MCP Servers
-  
-  #description
-  Point OPLINK at `.mcp-workflows/servers.json` and combine multiple MCP servers behind one workflow hub.
+  ```yaml
+  deepwiki_lookup:
+    description: "Ask DeepWiki a question about a GitHub repository"
+    runtime: scripted
+    parameters:
+      repo:
+        type: string
+        description: "owner/repo, e.g. shadcn-ui/ui"
+        required: true
+      question:
+        type: string
+        description: "Question to ask about the repository"
+        required: true
+    steps:
+      - call: deepwiki:ask_question
+        args:
+          repoName: "{{ repo }}"
+          question: "{{ question }}"
+  ```
   :::
+::
 
-  :::u-page-feature
-  ---
-  icon: i-lucide-terminal
-  ---
-  #title
-  Workflow Commands
-  
-  #description
-  Call named workflows like `frontend_debugger` or `deepwiki_lookup` instead of raw tools.
-  :::
+::u-page-section
+#title
+Example 3 – Universal Helper Across Servers
 
-  :::u-page-feature
-  ---
-  icon: i-lucide-git-merge
-  ---
-  #title
-  Share Your Setup
-  
-  #description
-  Keep workflows in git so your team shares the same debugging, triage, and research flows.
-  :::
+#description
+Use one workflow to route calls to tools from multiple MCP servers (e.g., Chrome DevTools + DeepWiki), with discovery via `describe_tools`.
 
-  :::u-page-feature
+#slots
+  :::prose-pre
   ---
-  icon: i-lucide-brain
+  code: |
+    # .mcp-workflows/workflows.yaml
+    universal_helper:
+      description: "Proxy Chrome DevTools + DeepWiki tools"
+      prompt: |
+        Accept a JSON object with:
+          - tool: the tool name to run
+          - server (optional): alias when tool is not prefixed
+          - args (optional): arguments for the tool call
+        Use describe_tools({ "workflow": "universal_helper" }) to discover tools.
+      externalServers:
+        - chrome-devtools
+        - deepwiki
+  filename: .mcp-workflows/workflows.yaml
   ---
-  #title
-  Smart Helpers
-  
-  #description
-  Encode strategies, defaults, and multi‑step plans so agents don’t have to improvise every time.
-  :::
-
-  :::u-page-feature
-  ---
-  icon: i-lucide-users
-  ---
-  #title
-  Team Friendly
-  
-  #description
-  Give teammates one MCP endpoint with curated workflows instead of a pile of servers.
-  :::
-
-  :::u-page-feature
-  ---
-  icon: i-lucide-library
-  ---
-  #title
-  Ready-Made Workflows
-  
-  #description
-  Start from examples (DeepWiki, Chrome DevTools, Context7, Atlassian, etc.) and adapt them to your stack.
+  ```yaml
+  universal_helper:
+    description: "Proxy Chrome DevTools + DeepWiki tools"
+    prompt: |
+      Accept a JSON object with:
+        - tool: the tool name to run
+        - server (optional): alias when tool is not prefixed
+        - args (optional): arguments for the tool call
+      Use describe_tools({ "workflow": "universal_helper" }) to discover tools.
+    externalServers:
+      - chrome-devtools
+      - deepwiki
+  ```
   :::
 ::
 
