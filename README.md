@@ -10,6 +10,7 @@ Create your own no-code workflows with MCP apps. Oplink combines multiple MCP se
 🚀 *No-code agent workflows* — create your own agent workflows with just editing yaml files<br />
 🧩 *One endpoint, many servers* — bundle any MCP Server like Chrome DevTools, shadcn, Context7, etc. behind a single MCP server entry.<br />
 🛡️ *Guided prompts & schemas* — every workflow exposes typed parameters, instructions, and curated helper tools.<br />
+💾 *Context-efficient discovery* — mcporter caches tool schemas in-memory, so agents discover tools via `describe_tools` without flooding your MCP client with dozens of external commands. Only your curated workflows appear in the tool list.<br />
 🧠 *Works in any MCP client* — Cursor, Claude Code, Codex, Windsurf, and friends can run complex flows without custom glue code.<br /><br />
 
 Imagine you're debugging a frontend issue and need to:
@@ -35,7 +36,9 @@ frontend_debugging:
     Analyze the reported issue systematically.
     Use Chrome DevTools to inspect the browser state and capture diagnostics.
     Reference shadcn component documentation to understand the UI library.
-  tools: "chrome-devtools:take_screenshot, chrome-devtools:list_console_messages, shadcn:search_items_in_registries"
+  externalServers:
+    - chrome-devtools
+    - shadcn
 ```
 
 One workflow, multiple servers, seamless execution. That's why Oplink exists.
@@ -87,7 +90,7 @@ npx -y oplink@latest init
         "oplink@latest",
         "server",
         "--config",
-        "/path/to/.workflows"
+        "/path/to/.mcp-workflows"
       ]
     }
   }
@@ -96,7 +99,7 @@ npx -y oplink@latest init
 
 ## Configuration
 
-Create a `.workflows` or `.mcp-workflows` directory and add YAML workflow files:
+Create a `.mcp-workflows` directory and add YAML workflow files:
 
 ```yaml
 debug_workflow:
@@ -104,8 +107,8 @@ debug_workflow:
   prompt: |
     Analyze the issue systematically.
     Gather logs and error information.
-  toolMode: "situational"
-  tools: "analyzeLogs, checkErrors, validateConfig"
+  externalServers:
+    - your-server-alias
 ```
 
 ### MCP Server Registry
@@ -235,13 +238,11 @@ take_screenshot:
 - Arguments can use `{{ paramName }}` templating.
 - Only the workflow tool (`take_screenshot`) is exposed to the MCP client; the chrome-devtools helpers stay internal.
 - Defaulted parameters like `format` keep the happy path simple (no extra args) while allowing overrides when you need a different image type.
-- Add `quiet: true` to a step if you don’t want the runner to emit "Step X" logs for that call (useful for screenshot steps that already return binary content).
+- Add `quiet: true` to a step if you don't want the runner to emit "Step X" logs for that call (useful for screenshot steps that already return binary content).
 
-Prompt-driven workflows (with `prompt`, `tools`, and `toolMode`) still work for legacy setups, but scripted workflows are the new default for minimizing context exposure.
+### Prompt-Only Workflows
 
-### Parameter Injection
-
-Inject typed parameters into prompts:
+For simple workflows that only need a prompt without external tool execution, you can use parameter injection:
 
 ```yaml
 thinking_mode:
@@ -258,25 +259,6 @@ thinking_mode:
     Deeply reflect upon: {{ thought }}
     Consider this context: {{ context }}
     Analyze implications and tradeoffs.
-```
-
-### Advanced Tool Configuration
-
-Define tool-specific prompts and optional flags:
-
-```yaml
-analysis_workflow:
-  description: "Comprehensive analysis"
-  prompt: "Begin analysis"
-  toolMode: "sequential"
-  tools:
-    gather_data: "Collect relevant information"
-    analyze_data:
-      prompt: "Perform deep analysis"
-      optional: false
-    generate_report:
-      prompt: "Create summary report"
-      optional: true
 ```
 
 ## Examples
