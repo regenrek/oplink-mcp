@@ -10,19 +10,19 @@ orientation: horizontal
 ---
   :::prose-pre
   ---
-  code: npx oplink@latest init
+  code: npx -y oplink@latest server --config ./.mcp-workflows
   filename: Terminal
   ---
   ```bash
-  npx oplink@latest init
+  npx -y oplink@latest server --config ./.mcp-workflows
   ```
   :::
 
 #title
-OPLINK Workflows
+OPLINK – MCP Server for Workflows
 
 #description
-OPLINK connects your favorite AI tools right in your code editor, making your coding faster and easier.
+OPLINK is an MCP server that sits between your IDE and multiple MCP servers. It reads simple YAML workflow definitions and exposes them as a single, coherent tool surface in your editor.
 
 #links
   :::u-button
@@ -50,7 +50,7 @@ OPLINK connects your favorite AI tools right in your code editor, making your co
 
 ::u-page-section
 #title
-All Your AI Tools in One Place
+Workflows on Top of Your MCP Servers
 
 #links
   :::u-button
@@ -71,10 +71,10 @@ All Your AI Tools in One Place
   icon: i-lucide-git-branch
   ---
   #title
-  Connect Your Tools
+  Connect Your MCP Servers
   
   #description
-  Use multiple AI tools together with simple commands.
+  Point OPLINK at `.mcp-workflows/servers.json` and combine multiple MCP servers behind one workflow hub.
   :::
 
   :::u-page-feature
@@ -82,10 +82,10 @@ All Your AI Tools in One Place
   icon: i-lucide-terminal
   ---
   #title
-  Simple Commands
+  Workflow Commands
   
   #description
-  Type everyday phrases like "debug this" to start powerful tools.
+  Call named workflows like `frontend_debugger` or `deepwiki_lookup` instead of raw tools.
   :::
 
   :::u-page-feature
@@ -96,7 +96,7 @@ All Your AI Tools in One Place
   Share Your Setup
   
   #description
-  Save and share your favorite tool combinations with your team.
+  Keep workflows in git so your team shares the same debugging, triage, and research flows.
   :::
 
   :::u-page-feature
@@ -107,7 +107,7 @@ All Your AI Tools in One Place
   Smart Helpers
   
   #description
-  Tell OPLINK how you want your tools to work together.
+  Encode strategies, defaults, and multi‑step plans so agents don’t have to improvise every time.
   :::
 
   :::u-page-feature
@@ -118,7 +118,7 @@ All Your AI Tools in One Place
   Team Friendly
   
   #description
-  Get your whole team using the same tools in the same way.
+  Give teammates one MCP endpoint with curated workflows instead of a pile of servers.
   :::
 
   :::u-page-feature
@@ -126,10 +126,10 @@ All Your AI Tools in One Place
   icon: i-lucide-library
   ---
   #title
-  Ready-Made Tools
+  Ready-Made Workflows
   
   #description
-  Start with our collection of pre-built tool combinations.
+  Start from examples (DeepWiki, Chrome DevTools, Context7, Atlassian, etc.) and adapt them to your stack.
   :::
 ::
 
@@ -148,8 +148,8 @@ All Your AI Tools in One Place
       icon: i-simple-icons-github
       color: neutral
       variant: subtle
-  description: OPLINK helps you use AI tools in your coding, whether you work alone or with a team.
-  title: Try OPLINK today!
+  description: OPLINK turns your MCP ecosystem into a coherent, versioned set of workflows that your IDE (and agents) can call with one server.
+  title: Try OPLINK as your workflow MCP server
   variant: subtle
   ---
   :::
