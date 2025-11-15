@@ -66,4 +66,4 @@ Tips
 See also
 
 - [External Servers & Registry](./4-external-servers)
-- Transport/auth deep dives: Advanced → [mcporter](/advanced/mcporter), [authentication](/advanced/authentication)
+- Transport/auth deep dives: Advanced → [mcporter](/advanced/3-mcporter), [authentication](/advanced/4-authentication)

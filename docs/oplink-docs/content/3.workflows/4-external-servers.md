@@ -63,4 +63,4 @@ Auto‑discovery vs scripted
 
 See also
 
-- Advanced: [mcporter](/advanced/mcporter), [authentication](/advanced/authentication)
+- Advanced: [mcporter](/advanced/3-mcporter), [authentication](/advanced/4-authentication)

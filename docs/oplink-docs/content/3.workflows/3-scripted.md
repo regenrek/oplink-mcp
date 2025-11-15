@@ -55,5 +55,5 @@ Why scripted
 
 See also
 
-- Advanced: [Scripted Workflow Arguments](/advanced/scripted-workflow-args) for additional patterns
+- Advanced: [Scripted Workflow Arguments](/advanced/2-scripted-workflow-args) for additional patterns
 - [Parameters & Schemas](./5-parameters-and-schemas)
