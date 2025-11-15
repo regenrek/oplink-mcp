@@ -37,4 +37,4 @@ Next steps
 - [External Servers & Registry](./4-external-servers)
 - [Parameters & Schemas](./5-parameters-and-schemas)
 - [Debugging & Caching](./6-debugging-and-caching)
-- [Examples](/4.examples) - See practical workflow examples
+- See the Examples section for practical workflow examples

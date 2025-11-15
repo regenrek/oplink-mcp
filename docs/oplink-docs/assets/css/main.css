@@ -23,3 +23,43 @@
 :root {
 	--ui-container: var(--container-8xl);
 }
+
+/* Reduce padding on page sections and hero - smaller but with breathing room */
+[class*="py-24"][class*="sm:py-32"][class*="lg:py-40"] {
+	padding-top: 2rem !important; /* py-8 */
+	padding-bottom: 2rem !important; /* py-8 */
+}
+
+@media (min-width: 640px) {
+	[class*="py-24"][class*="sm:py-32"][class*="lg:py-40"] {
+		padding-top: 2.5rem !important; /* py-10 */
+		padding-bottom: 2.5rem !important; /* py-10 */
+	}
+}
+
+@media (min-width: 1024px) {
+	[class*="py-24"][class*="sm:py-32"][class*="lg:py-40"] {
+		padding-top: 3rem !important; /* py-12 */
+		padding-bottom: 3rem !important; /* py-12 */
+	}
+}
+
+/* Also reduce padding on sections with py-16 sm:py-24 lg:py-32 */
+[class*="py-16"][class*="sm:py-24"][class*="lg:py-32"] {
+	padding-top: 2rem !important; /* py-8 */
+	padding-bottom: 2rem !important; /* py-8 */
+}
+
+@media (min-width: 640px) {
+	[class*="py-16"][class*="sm:py-24"][class*="lg:py-32"] {
+		padding-top: 2.5rem !important; /* py-10 */
+		padding-bottom: 2.5rem !important; /* py-10 */
+	}
+}
+
+@media (min-width: 1024px) {
+	[class*="py-16"][class*="sm:py-24"][class*="lg:py-32"] {
+		padding-top: 3rem !important; /* py-12 */
+		padding-bottom: 3rem !important; /* py-12 */
+	}
+}

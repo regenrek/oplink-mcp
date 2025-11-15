@@ -69,12 +69,132 @@ OPLINK is an MCP server that sits between your IDE and multiple MCP servers. It 
 
 ::u-page-section
 #title
-Example 1 – Frontend Debugger
+Workflows on Top of Your MCP Servers
+
+#features
+  :::u-page-feature
+  ---
+  icon: i-lucide-git-branch
+  ---
+  #title
+  Connect MCP Servers
+  
+  #description
+  Point OPLINK at `.mcp-workflows/servers.json` and combine multiple MCP servers behind one workflow hub.
+  :::
+
+  :::u-page-feature
+  ---
+  icon: i-lucide-terminal
+  ---
+  #title
+  Named Workflow Commands
+  
+  #description
+  Call custom workflow names like `debug_frontend` or `research_repo` instead of juggling dozens of raw tools.
+  :::
+
+  :::u-page-feature
+  ---
+  icon: i-lucide-git-merge
+  ---
+  #title
+  Versioned Config
+  
+  #description
+  Keep workflows in git so your team shares the same debugging, triage, and research flows.
+  :::
+
+  :::u-page-feature
+  ---
+  icon: i-lucide-brain
+  ---
+  #title
+  Encoded Strategies
+  
+  #description
+  Encode multi‑step plans, defaults, and guardrails so agents don’t have to improvise every time.
+  :::
+
+  :::u-page-feature
+  ---
+  icon: i-lucide-users
+  ---
+  #title
+  Team Friendly
+  
+  #description
+  Give teammates one MCP endpoint with curated workflows instead of a pile of servers.
+  :::
+
+  :::u-page-feature
+  ---
+  icon: i-lucide-library
+  ---
+  #title
+  Ready-Made Workflows
+  
+  #description
+  Start from examples (DeepWiki, Chrome DevTools, Context7, Atlassian, etc.) and adapt them to your stack.
+  :::
+::
+
+::u-page-section
+#title
+Examples
+::
+
+::u-page-section
+---
+orientation: horizontal
+---
+#title
+Linear + Discord Integration
+
+#description
+Combine Linear issue management and Discord messaging into a single `linear_discord_helper` workflow. Use `describe_tools` to discover available tools, then route calls to either server.
+
+#default
+  :::prose-pre
+  ---
+  code: |
+    # .mcp-workflows/workflows.yaml
+    linear_discord_helper:
+      description: "Access both Linear and Discord MCP tools"
+      prompt: |
+        Use Linear and Discord MCP tools together.
+        Call describe_tools({ "workflow": "linear_discord_helper" }) first to see available tools.
+        Then call this workflow with {"tool": "tool_name", "server": "linear" or "discord", "args": {...}}.
+      externalServers:
+        - linear
+        - discord
+  filename: .mcp-workflows/workflows.yaml
+  ---
+  ```yaml
+  linear_discord_helper:
+    description: "Access both Linear and Discord MCP tools"
+    prompt: |
+      Use Linear and Discord MCP tools together.
+      Call describe_tools({ "workflow": "linear_discord_helper" }) first to see available tools.
+      Then call this workflow with {"tool": "tool_name", "server": "linear" or "discord", "args": {...}}.
+    externalServers:
+      - linear
+      - discord
+  ```
+  :::
+::
+
+::u-page-section
+---
+orientation: horizontal
+---
+#title
+Frontend Debugger
 
 #description
 Turn Chrome DevTools MCP into a single `take_screenshot` workflow that agents can call to navigate, wait for content, and capture screenshots.
 
-#slots
+#default
   :::prose-pre
   ---
   code: |
@@ -143,13 +263,16 @@ Turn Chrome DevTools MCP into a single `take_screenshot` workflow that agents ca
 ::
 
 ::u-page-section
+---
+orientation: horizontal
+---
 #title
-Example 2 – Repository Q&A with DeepWiki
+Repository Q&A with DeepWiki
 
 #description
 Ask structured questions about any GitHub repo via DeepWiki, but expose it as a single `deepwiki_lookup` workflow in your IDE.
 
-#slots
+#default
   :::prose-pre
   ---
   code: |
@@ -191,47 +314,6 @@ Ask structured questions about any GitHub repo via DeepWiki, but expose it as a 
         args:
           repoName: "{{ repo }}"
           question: "{{ question }}"
-  ```
-  :::
-::
-
-::u-page-section
-#title
-Example 3 – Universal Helper Across Servers
-
-#description
-Use one workflow to route calls to tools from multiple MCP servers (e.g., Chrome DevTools + DeepWiki), with discovery via `describe_tools`.
-
-#slots
-  :::prose-pre
-  ---
-  code: |
-    # .mcp-workflows/workflows.yaml
-    universal_helper:
-      description: "Proxy Chrome DevTools + DeepWiki tools"
-      prompt: |
-        Accept a JSON object with:
-          - tool: the tool name to run
-          - server (optional): alias when tool is not prefixed
-          - args (optional): arguments for the tool call
-        Use describe_tools({ "workflow": "universal_helper" }) to discover tools.
-      externalServers:
-        - chrome-devtools
-        - deepwiki
-  filename: .mcp-workflows/workflows.yaml
-  ---
-  ```yaml
-  universal_helper:
-    description: "Proxy Chrome DevTools + DeepWiki tools"
-    prompt: |
-      Accept a JSON object with:
-        - tool: the tool name to run
-        - server (optional): alias when tool is not prefixed
-        - args (optional): arguments for the tool call
-      Use describe_tools({ "workflow": "universal_helper" }) to discover tools.
-    externalServers:
-      - chrome-devtools
-      - deepwiki
   ```
   :::
 ::

@@ -46,55 +46,11 @@ IDE → Oplink (workflows + registry + .env) → mcporter → external MCP serve
 
 See also: repo file `docs/arch.md` for the Mermaid diagram and more detail.
 
-## Mermaid Diagram
+## Architecture Diagram
 
-```mermaid
-flowchart LR
-  %% Groups
-  subgraph IDE[Client]
-    A[MCP Client]
-  end
+![Oplink Architecture Diagram](/architecture-diagram.svg)
 
-  subgraph O[Oplink MCP Server]
-    O1[Tool Orchestrator]
-    O2[Workflows YAML / workflows.yaml]
-    O3[Server Registry / .mcp-workflows/servers.json + .env]
-  end
-
-  subgraph M[mcporter Runtime]
-    M1[mcporter runtime]
-  end
-
-  subgraph X[External MCP Servers]
-    X1[chrome-devtools stdio]
-    X2[shadcn stdio]
-    X3[deepwiki http-or-stdio]
-  end
-
-  %% Invocation path
-  A --> O1
-  O1 --- O2
-  O1 --- O3
-
-  %% Startup discovery/registration
-  O1 -.-> M1
-  M1 -.-> X1
-  M1 -.-> X2
-  M1 -.-> X3
-
-  %% Execution path
-  O1 --> M1
-  M1 --> X1
-  X1 --> M1
-  M1 --> O1
-  O1 --> A
-
-  %% Notes
-  classDef note fill:#f6f8fa,stroke:#d0d7de,color:#24292f;
-  N1[Only workflow tools are exposed to the MCP client; helper tools stay internal.]:::note
-  N2[mcporter handles discovery, auth, stdio/http transport, retries, and connection reuse.]:::note
-  N3[.env is auto‑loaded from the --config directory and passed to external servers (e.g., Docker -e).]:::note
-  O1 --- N1
-  M1 --- N2
-  O3 --- N3
-```
+**Notes:**
+- Only workflow tools are exposed to the MCP client; helper tools stay internal.
+- mcporter handles discovery, auth, stdio/http transport, retries, and connection reuse.
+- `.env` is auto‑loaded from the `--config` directory and passed to external servers (e.g., Docker `-e`).

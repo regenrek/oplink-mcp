@@ -22,14 +22,14 @@ export CONTEXT7_API_KEY="sk-..."
 - `.mcp-workflows/servers.json` – declares the `context7` alias using the published `@upstash/context7-mcp` stdio command. The `${CONTEXT7_API_KEY}` placeholder is expanded at startup.
 
 - `.mcp-workflows/workflows.yaml` – defines two workflows:
-  - `context7_demo`: uses an explicit proxy tool `context7:get-library-docs`
-  - `context7_auto`: uses `externalServers: [context7]` to auto-register all Context7 tools
+  - `context7_demo`: prompt workflow that exposes Context7 tools via `externalServers`
+  - `context7_auto`: auto-discovery workflow that exposes all Context7 tools
 
 ## Workflows
 
 ### `context7_demo`
 
-Prompt workflow with explicit tool reference:
+Prompt workflow that exposes Context7 tools:
 
 ```yaml
 context7_demo:
@@ -42,8 +42,8 @@ context7_demo:
   prompt: |
     Use context7:get-library-docs with the topic {{ topic }}.
     Summarize the most relevant APIs and callouts for the user.
-  tools:
-    context7:get-library-docs: "Retrieve docs from Context7"
+  externalServers:
+    - context7
 ```
 
 ### `context7_auto`
@@ -57,8 +57,6 @@ context7_auto:
     Use Context7 tools as needed to collect documentation and answer the request.
   externalServers:
     - context7
-  tools:
-    context7:get-library-docs: "Prefer this to fetch docs"
 ```
 
 ## Usage
