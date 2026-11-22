@@ -14,7 +14,6 @@ catalogs:
     '@antfu/eslint-config': ^4.10.1
     '@antfu/ni': ^24.1.0
     '@biomejs/biome': ^1.9.4
-    '@modelcontextprotocol/inspector': ^0.6.0
     '@rollup/plugin-yaml': ^4.1.2
     bumpp: ^10.1.0
     clipboardy: ^4.0.0
@@ -53,7 +52,7 @@ catalogs:
     unimport: ^4.1.2
     zod: ^3.24.2
   testing:
-    vitest: ^3.0.8
+    vitest: ~4.1.0
     vitest-package-exports: ^0.1.1
     yaml: ^2.7.0
   types:
