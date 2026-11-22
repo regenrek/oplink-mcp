@@ -19,7 +19,7 @@
 		"@nuxt/image": "^2.0.0",
 		"@nuxt/ui": "^4.1.0",
 		"better-sqlite3": "^12.4.1",
-		"nuxt": "^4.2.1",
+		"nuxt": "^4.6.4",
 		"nuxt-llms": "0.1.3",
 		"nuxt-og-image": "^5.1.12",
 		"unist-util-visit": "^5.0.0"
